@@ -7,14 +7,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import sequencial.SeqKmeansFor2Dpoints;
+import sequencial.SeqKmeansForDNAStrands;
+import utility.DNAStrand;
+import utility.DNAStrandCluster;
+import utility.DNAStrandDataLoader;
 import utility.MPIMessage;
-import utility.TwoDCluster;
-import utility.TwoDPoint;
+import utility.DNAStrandCluster;
+import utility.DNAStrand;
 import utility.TwoDpointsDataLoader;
 
-public class ParallelTwoD{
-    private ArrayList<TwoDPoint> rawData;
-    private ArrayList<TwoDCluster> clusters;
+public class ParallelDNA{
+    private ArrayList<DNAStrand> rawData;
+    private ArrayList<DNAStrandCluster> clusters;
     
 
     private int miu; //iterating rounds
@@ -32,26 +36,26 @@ public class ParallelTwoD{
     public void setMiu(int miu) {
         this.miu = miu;
     }
-    public ParallelTwoD(){
-        this.rawData = new ArrayList<TwoDPoint>();
-        this.clusters = new ArrayList<TwoDCluster>();
+    public ParallelDNA(){
+        this.rawData = new ArrayList<DNAStrand>();
+        this.clusters = new ArrayList<DNAStrandCluster>();
         this.rawData = null;
         this.k = 2;
         this.miu = 100;
     }
-    public ArrayList<TwoDPoint> getRawData() {
+    public ArrayList<DNAStrand> getRawData() {
         return rawData;
     }
 
-    public void setRawData(ArrayList<TwoDPoint> rawData) {
+    public void setRawData(ArrayList<DNAStrand> rawData) {
         this.rawData = rawData;
     }
 
-    public ArrayList<TwoDCluster> getClusters() {
+    public ArrayList<DNAStrandCluster> getClusters() {
         return clusters;
     }
 
-    public void setClusters(ArrayList<TwoDCluster> clusters) {
+    public void setClusters(ArrayList<DNAStrandCluster> clusters) {
         this.clusters = clusters;
     }
     public static void main(String[] args){
@@ -66,7 +70,7 @@ public class ParallelTwoD{
             System.out.println("Please configur more than 2 processes.");
             return;
         }
-        ParallelTwoD pTwoD = new ParallelTwoD();
+        ParallelDNA pDNA = new ParallelDNA();
         if(rank == 0) {
             String input = "../input/cluster.csv";
             String output = "../output/twoDResult.txt";
@@ -74,14 +78,14 @@ public class ParallelTwoD{
             
             
             
-            SeqKmeansFor2Dpoints TwoDCase = new SeqKmeansFor2Dpoints();
+            SeqKmeansForDNAStrands DNACase = new SeqKmeansForDNAStrands();
             //load the data
-            TwoDpointsDataLoader loader = new TwoDpointsDataLoader(input);
-            TwoDCase.setRawData(loader.loadData());
+            DNAStrandDataLoader loader = new DNAStrandDataLoader(input);
+            DNACase.setRawData(loader.loadData());
             
-            pTwoD.assignTasks(TwoDCase.getRawData(),size,pTwoD.k);
-            pTwoD.repeat(size, pTwoD.k);
-            pTwoD.outputResults(output);
+            pDNA.assignTasks(DNACase.getRawData(),size,pDNA.k);
+            pDNA.repeat(size, pDNA.k);
+            pDNA.outputResults(output);
             
         }else{
            while(true){
@@ -92,19 +96,19 @@ public class ParallelTwoD{
                System.out.println("Message received: " + msg.getCmdId());
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
                    //only transmit the rawData once
-                   if(pTwoD.getRawData() == null){
-                       pTwoD.setRawData(msg.getRawData());
+                   if(pDNA.getRawData() == null){
+                       pDNA.setRawData(msg.getDNARawData());
                    }
                  //step 2: assign each data point to a cluster which is closer to it.
-                   for(int j=0;j<pTwoD.getRawData().size();j++){
-                       TwoDPoint p = pTwoD.getRawData().get(j);
+                   for(int j=0;j<pDNA.getRawData().size();j++){
+                       DNAStrand p = pDNA.getRawData().get(j);
                        
                        //calculate which cluster is closer to the data point
                        int idCluster = 0;
                        double disMin = 9999999;//infinite
                        double disCurrent = 0;
-                       for(int n=0;n<pTwoD.k;n++){
-                            disCurrent = p.distance(pTwoD.clusters.get(n).getCentroid());
+                       for(int n=0;n<pDNA.k;n++){
+                            disCurrent = p.distance(pDNA.clusters.get(n).getCentroid());
                             if(disCurrent<disMin){ 
                                 idCluster = n;
                                 disMin = disCurrent;
@@ -112,10 +116,10 @@ public class ParallelTwoD{
                        }
                        
                        //assign the data point into the cluster
-                       pTwoD.clusters.get(idCluster).add(p);
+                       pDNA.clusters.get(idCluster).add(p);
                    }
                    msg.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
-                   msg.setClusters(pTwoD.clusters);
+                   msg.setDNAClusters(pDNA.clusters);
                    messageArray[0] = msg;
                    messageArray[1] = null;
                    MPI.COMM_WORLD.Send(messageArray, 0, 2, MPI.OBJECT, 0, 0);
@@ -133,22 +137,22 @@ public class ParallelTwoD{
        }
 }
 
-    private void assignTasks(ArrayList<TwoDPoint> rawData2, int size, int k) {
+    private void assignTasks(ArrayList<DNAStrand> rawData2, int size, int k) {
       //step 1: initialize centroids and clusters
         for(int j=0;j<size;j++){
             MPIMessage msg = new MPIMessage();
             msg.setCmdId(MPIMessage.CommandId.CLUSTER);
             for(int i =0; i<k;i++){
                 
-                msg.setCentroid(this.getRawData().get(i));
+                msg.setDNACentroid(this.getRawData().get(i));
                 
             }
-            ArrayList<TwoDPoint> rawDataSend = new ArrayList<TwoDPoint>();
+            ArrayList<DNAStrand> rawDataSend = new ArrayList<DNAStrand>();
             int chunk = this.getRawData().size()/size;
             for(int m=j*chunk;m<(j+1)*chunk;m++){
                 rawDataSend.add(this.rawData.get(m));
             }
-            msg.setRawData(rawDataSend);
+            msg.setDNARawData(rawDataSend);
             Object[] MPIMsgArray = new Object[2];
             MPIMsgArray[0] = msg;
             MPIMsgArray[1] = null;
@@ -166,7 +170,7 @@ public class ParallelTwoD{
                 MPIMessage msg = (MPIMessage)MPIMsgArray[0];
                 //conbine the subCluster from every node
                 for(int n=0;n<k;n++){
-                    getClusters().get(n).addCluster(msg.getClusters().get(n));
+                    getClusters().get(n).addCluster(msg.getDNAClusters().get(n));
                 }
                 
             }
@@ -182,7 +186,7 @@ public class ParallelTwoD{
                 msg.setCmdId(MPIMessage.CommandId.CLUSTER);
                 for(int q =0; q<k;q++){
                     
-                    msg.setCentroid(clusters.get(q).getCentroid());
+                    msg.setDNACentroid(clusters.get(q).getCentroid());
                     
                 }
                 MPIMsgArray[0] = msg;
@@ -215,11 +219,9 @@ public class ParallelTwoD{
         try(BufferedWriter bw= new BufferedWriter(new FileWriter(outputFile))){
             for(int i=0;i<this.clusters.size();i++){
                 bw.write("Cluster "+i+"\n");
-                bw.write(" Centroid: "+this.clusters.get(i).getCentroid().getX()
-                        +","+this.clusters.get(i).getCentroid().getY()+"\n");
+                bw.write(" Centroid: "+this.clusters.get(i).getCentroid().getStrand()+"\n");
                 for(int j=0;j<this.clusters.get(i).getCluster().size();j++){
-                    bw.write("     "+this.clusters.get(i).getCluster().get(j).getX()+
-                            ","+this.clusters.get(i).getCluster().get(j).getX()
+                    bw.write("     "+this.clusters.get(i).getCluster().get(j).getStrand()
                             +" distance to the Centroid:"+
                             this.clusters.get(i).getCluster().get(j).distance(this.clusters.get(i).getCentroid())
                             +"\n");

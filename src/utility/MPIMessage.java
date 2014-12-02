@@ -27,6 +27,9 @@ public class MPIMessage implements Serializable{
     private ArrayList<TwoDCluster> clusters;
     private ArrayList<TwoDPoint> rawData;
     private TwoDPoint centroid;
+    private DNAStrand DNACentroid;
+    private ArrayList<DNAStrandCluster> DNAClusters;
+    private ArrayList<DNAStrand> DNARawData;
     public String getFileName() {
         return fileName;
     }
@@ -83,6 +86,24 @@ public class MPIMessage implements Serializable{
     }
     public void setCentroid(TwoDPoint centroid) {
         this.centroid = centroid;
+    }
+    public DNAStrand getDNACentroid() {
+        return DNACentroid;
+    }
+    public void setDNACentroid(DNAStrand dNACentroid) {
+        DNACentroid = dNACentroid;
+    }
+    public ArrayList<DNAStrandCluster> getDNAClusters() {
+        return DNAClusters;
+    }
+    public void setDNAClusters(ArrayList<DNAStrandCluster> dNAClusters) {
+        DNAClusters = dNAClusters;
+    }
+    public ArrayList<DNAStrand> getDNARawData() {
+        return DNARawData;
+    }
+    public void setDNARawData(ArrayList<DNAStrand> dNARawData) {
+        DNARawData = dNARawData;
     }
     
 }

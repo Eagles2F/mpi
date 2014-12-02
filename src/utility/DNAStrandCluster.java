@@ -23,9 +23,7 @@ public class DNAStrandCluster implements Serializable{
     public void setCluster(ArrayList<DNAStrand> cluster) {
         this.cluster = cluster;
     }
-    public void add(DNAStrand pt){
-        cluster.add(pt);
-    }
+    
     
     //recalculate the new centroid
     public void calculateCentroid(){
@@ -58,6 +56,12 @@ public class DNAStrandCluster implements Serializable{
 		this.centroid = centroid;
 	}
 	
+	public void add(DNAStrand pt){
+        cluster.add(pt);
+    }
+    public void addCluster(DNAStrandCluster newCluster){
+        cluster.addAll(newCluster.getCluster());
+    }
 	public void clearCluster(){
 		this.cluster.clear();
 	}
