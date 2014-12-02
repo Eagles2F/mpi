@@ -1,0 +1,24 @@
+Cluster 0
+ Centroid: AGGCAAGGTGAGGACCTAGA
+     AGGCAAGGTGAGGACCTAGA distance to the Centroid:0
+     ATCCAAGGTGAGGACCTAGA distance to the Centroid:2
+     ATGCAAGGTGAGGAACTAGA distance to the Centroid:2
+     TTGCAAGGTGAGGACCTAGA distance to the Centroid:2
+     ATGCAAGCTGAGGACCTAGA distance to the Centroid:2
+     ATGCAAGGTGAGGACCTAGG distance to the Centroid:2
+     ATGCAAGGTGAGGACCTGGA distance to the Centroid:2
+     ATGCAAGGTGAGGACCGAGA distance to the Centroid:2
+     ACGCAAGGTGAGGACCTAGA distance to the Centroid:1
+     ATGCAAGGTGATGACCTAGA distance to the Centroid:2
+Cluster 1
+ Centroid: GCAACGTAACAGAAGGGGTA
+     GCAAAGTAACAGCAGGGGTA distance to the Centroid:2
+     GCAACATAACAGCAGGGGTA distance to the Centroid:2
+     GCAACGTAACAACAGGGGTA distance to the Centroid:2
+     GCAACGTAACAGAAGGGGTA distance to the Centroid:0
+     GCAACGTAACAGCATGGGTA distance to the Centroid:2
+     GCAACGTAACAGGAGGGGTA distance to the Centroid:1
+     GCAACGTAACAGCAGGAGTA distance to the Centroid:2
+     GCATCGTAACAGCAGGGGTA distance to the Centroid:2
+     GAAACGTAACAGCAGGGGTA distance to the Centroid:2
+     GCAACGTAACAGCAGCGGTA distance to the Centroid:2
