@@ -23,7 +23,7 @@ public class SeqKmeansFor2Dpoints {
 	private int miu=100; //iterating rounds
 	
 	public SeqKmeansFor2Dpoints(){
-		this.rawData = new ArrayList<TwoDPoint>();
+		this.setRawData(new ArrayList<TwoDPoint>());
 		this.clusters = new ArrayList<TwoDCluster>();
 	}
 	
@@ -32,7 +32,7 @@ public class SeqKmeansFor2Dpoints {
 		//step 1: initialize centroids and clusters
 		for(int i =0; i<k;i++){
 			TwoDCluster cluster = new TwoDCluster();
-			cluster.setCentroid(rawData.get(i));
+			cluster.setCentroid(getRawData().get(i));
 			this.clusters.add(cluster);
 		}
 		
@@ -42,8 +42,8 @@ public class SeqKmeansFor2Dpoints {
 				this.clusters.get(n).clearCluster();
 			}
 			//step 2: assign each data point to a cluster which is closer to it.
-			for(int j=0;j<this.rawData.size();j++){
-				TwoDPoint p = rawData.get(j);
+			for(int j=0;j<this.getRawData().size();j++){
+				TwoDPoint p = getRawData().get(j);
 				
 				//calculate which cluster is closer to the data point
 				int idCluster = 0;
@@ -109,7 +109,7 @@ public class SeqKmeansFor2Dpoints {
 		SeqKmeansFor2Dpoints TwoDCase = new SeqKmeansFor2Dpoints();
 		//load the data
 		TwoDpointsDataLoader loader = new TwoDpointsDataLoader(input);
-		TwoDCase.rawData = loader.loadData();
+		TwoDCase.setRawData(loader.loadData());
 		
 		//running the Kmeans clustering
 		TwoDCase.KmeansCluster(k);
@@ -117,4 +117,12 @@ public class SeqKmeansFor2Dpoints {
 		//output the result
 		TwoDCase.outputResults(output);
 	}
+
+    public ArrayList<TwoDPoint> getRawData() {
+        return rawData;
+    }
+
+    public void setRawData(ArrayList<TwoDPoint> rawData) {
+        this.rawData = rawData;
+    }
 }
