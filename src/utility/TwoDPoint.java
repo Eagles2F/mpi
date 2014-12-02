@@ -2,6 +2,10 @@ package utility;
 import java.io.Serializable;
 
 public class TwoDPoint implements Serializable{
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
     private double x;
     private double y;
     
@@ -39,5 +43,6 @@ public class TwoDPoint implements Serializable{
         newP.setY(this.y + pt.getY());
         return newP;
     }
+
     
 }
