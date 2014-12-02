@@ -26,7 +26,7 @@ public class TwoDpointsDataLoader {
 			String line;
 			while((line = br.readLine())!= null){
 				String [] b = line.split(splitBy);
-				points.add(new TwoDPoint(Integer.valueOf(b[0]),Integer.valueOf(b[1])));
+				points.add(new TwoDPoint(Double.valueOf(b[0]),Double.valueOf(b[1])));
 				//bypass the empty line
 				br.readLine();
 			}

@@ -9,26 +9,14 @@ public class TwoDCluster implements Serializable{
      * 
      */
     private static final long serialVersionUID = 1L;
-    private double xMean;
-    private double yMean;
+    private TwoDPoint centroid;
+    
     private ArrayList<TwoDPoint> cluster;
     public TwoDCluster(){
         cluster = new ArrayList<TwoDPoint>();
-        xMean = 0;
-        yMean = 0;
+       setCentroid(null);
     }
-    public double getxMean() {
-        return xMean;
-    }
-    public void setxMean(double xMean) {
-        this.xMean = xMean;
-    }
-    public double getyMean() {
-        return yMean;
-    }
-    public void setyMean(double yMean) {
-        this.yMean = yMean;
-    }
+ 
     public ArrayList<TwoDPoint> getCluster() {
         return cluster;
     }
@@ -41,18 +29,33 @@ public class TwoDCluster implements Serializable{
     public void addCluster(TwoDCluster newCluster){
         cluster.addAll(newCluster.getCluster());
     }
-    public void calculateMean(){
+    
+    //recaculate the new centroid
+    public void calculateCentroid(){
         int count = cluster.size();
         if(count == 0) {
             return;
         }
-        xMean = 0;
-        yMean = 0;
+        double xMean = 0;
+        double yMean = 0;
         for(TwoDPoint pt : cluster) {
             xMean += pt.getX();
             yMean += pt.getY();
         }
         xMean = xMean/count;
         yMean = yMean/count;
+        centroid.setX(xMean);
+        centroid.setY(yMean);
     }
+    
+	public TwoDPoint getCentroid() {
+		return centroid;
+	}
+	public void setCentroid(TwoDPoint centroid) {
+		this.centroid = centroid;
+	}
+	
+	public void clearCluster(){
+		this.cluster.clear();
+	}
 }

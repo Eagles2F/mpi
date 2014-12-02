@@ -7,6 +7,10 @@
 
 package sequencial;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import utility.TwoDCluster;
@@ -15,33 +19,89 @@ import utility.TwoDpointsDataLoader;
 
 public class SeqKmeansFor2Dpoints {
 	private ArrayList<TwoDPoint> rawData;
-	private ArrayList<TwoDPoint> centroids;
 	private ArrayList<TwoDCluster> clusters;
-	private int miu; //iterating rounds
+	private int miu=100; //iterating rounds
+	
+	public SeqKmeansFor2Dpoints(){
+		this.rawData = new ArrayList<TwoDPoint>();
+		this.clusters = new ArrayList<TwoDCluster>();
+	}
 	
 	//the kmeans clustering method
 	public void KmeansCluster(int k){
-		//step 1: initialize centroids
+		//step 1: initialize centroids and clusters
 		for(int i =0; i<k;i++){
-			centroids.add(new TwoDPoint(rawData.get(i)));
+			TwoDCluster cluster = new TwoDCluster();
+			cluster.setCentroid(rawData.get(i));
+			this.clusters.add(cluster);
 		}
+		
 		for(int i=0; i<miu;i++){
-		//step 2: assign each data point to a cluster
+			// clear each cluster 
+			for(int n=0;n<k;n++){
+				this.clusters.get(n).clearCluster();
+			}
+			//step 2: assign each data point to a cluster which is closer to it.
+			for(int j=0;j<this.rawData.size();j++){
+				TwoDPoint p = rawData.get(j);
+				
+				//calculate which cluster is closer to the data point
+				int idCluster = 0;
+				double disMin = 9999999;//infinite
+				double disCurrent = 0;
+				for(int n=0;n<k;n++){
+					 disCurrent = p.distance(this.clusters.get(n).getCentroid());
+					 if(disCurrent<disMin){ 
+						 idCluster = n;
+						 disMin = disCurrent;
+					 }
+				}
+				
+				//assign the data point into the cluster
+				this.clusters.get(idCluster).add(p);
+			}
 			
-			
-		//step 3: recaculate the centroids in each cluster
-			
+			//step 3: recalculate the centroids in each cluster
+			for(int n=0;n<k;n++){
+				this.clusters.get(n).calculateCentroid();
+			}
 		}
 	}
 	
 	//output the clustering results
 	public void outputResults(String outputFile){
+		File file = new File(outputFile);
+		if(!file.exists()){
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		
+		try(BufferedWriter bw= new BufferedWriter(new FileWriter(outputFile))){
+			for(int i=0;i<this.clusters.size();i++){
+				bw.write("Cluster "+i+"\n");
+				bw.write(" Centroid: "+this.clusters.get(i).getCentroid().getX()
+						+","+this.clusters.get(i).getCentroid().getY()+"\n");
+				for(int j=0;j<this.clusters.get(i).getCluster().size();j++){
+					bw.write("     "+this.clusters.get(i).getCluster().get(j).getX()+
+							","+this.clusters.get(i).getCluster().get(j).getX()
+							+" distance to the Centroid:"+
+							this.clusters.get(i).getCluster().get(j).distance(this.clusters.get(i).getCentroid())
+							+"\n");
+				}
+			}
+		} catch (IOException e) {
+			
+			e.printStackTrace();
+		} 
 	}
 	
-	static void main(){
-		//Input File
-		String input = "cluster.csv";
+	public static void main(String[] args){
+		//Input&Output File
+		String input = "../input/cluster.csv";
+		String output = "../output/twoDResult.txt";
 		//number of clusters
 		int k=2;
 		
@@ -53,5 +113,8 @@ public class SeqKmeansFor2Dpoints {
 		
 		//running the Kmeans clustering
 		TwoDCase.KmeansCluster(k);
+		
+		//output the result
+		TwoDCase.outputResults(output);
 	}
 }

@@ -36,7 +36,7 @@ public class TwoDPoint implements Serializable{
     
     public double distance(TwoDPoint pt){
         double dis;
-        dis = Math.sqrt(this.x - pt.getX()) + Math.sqrt(this.y - pt.getY());
+        dis = Math.sqrt((this.x - pt.getX())*(this.x - pt.getX()) + (this.y - pt.getY())*(this.y - pt.getY()));
         return dis;
     }
     
