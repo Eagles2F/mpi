@@ -1,7 +1,7 @@
 package utility;
 import java.io.Serializable;
 
-public class TwoDPoint implements Serializable{
+public class TwoDPoint implements Serializable, DataTypeBase{
     private double x;
     private double y;
     public double getX() {
@@ -28,6 +28,21 @@ public class TwoDPoint implements Serializable{
         newP.setX(this.x + pt.getX());
         newP.setY(this.y + pt.getY());
         return newP;
+    }
+    @Override
+    public DataTypeBase add(DataTypeBase pt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    @Override
+    public DataTypeBase distance(DataTypeBase pt) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    @Override
+    public DataTypeBase div(DataTypeBase pt, double divisor) {
+        // TODO Auto-generated method stub
+        return null;
     }
     
 }
