@@ -3,7 +3,7 @@ package utility;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class TowDCluster implements Serializable{
+public class TwoDCluster implements Serializable{
 
     /**
      * 
@@ -12,7 +12,7 @@ public class TowDCluster implements Serializable{
     private double xMean;
     private double yMean;
     private ArrayList<TwoDPoint> cluster;
-    public TowDCluster(){
+    public TwoDCluster(){
         cluster = new ArrayList<TwoDPoint>();
         xMean = 0;
         yMean = 0;
@@ -38,7 +38,7 @@ public class TowDCluster implements Serializable{
     public void add(TwoDPoint pt){
         cluster.add(pt);
     }
-    public void addCluster(TowDCluster newCluster){
+    public void addCluster(TwoDCluster newCluster){
         cluster.addAll(newCluster.getCluster());
     }
     public void calculateMean(){

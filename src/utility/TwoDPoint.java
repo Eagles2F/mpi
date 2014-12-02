@@ -12,10 +12,13 @@ public class TwoDPoint implements Serializable{
     public TwoDPoint(){
     	
     }
-    
-    public TwoDPoint(double x , double y){
+    public TwoDPoint(double x,double y){
     	this.x = x;
     	this.y = y;
+    }
+    public TwoDPoint(TwoDPoint p){
+    	this.x = p.getX();
+    	this.y = p.getY();
     }
     
     public double getX() {

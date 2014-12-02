@@ -9,17 +9,36 @@ package sequencial;
 
 import java.util.ArrayList;
 
+import utility.TwoDCluster;
 import utility.TwoDPoint;
 import utility.TwoDpointsDataLoader;
 
 public class SeqKmeansFor2Dpoints {
 	private ArrayList<TwoDPoint> rawData;
 	private ArrayList<TwoDPoint> centroids;
+	private ArrayList<TwoDCluster> clusters;
+	private int miu; //iterating rounds
 	
 	//the kmeans clustering method
-	public KmeansCluster(int k){
+	public void KmeansCluster(int k){
+		//step 1: initialize centroids
+		for(int i =0; i<k;i++){
+			centroids.add(new TwoDPoint(rawData.get(i)));
+		}
+		for(int i=0; i<miu;i++){
+		//step 2: assign each data point to a cluster
+			
+			
+		//step 3: recaculate the centroids in each cluster
+			
+		}
+	}
+	
+	//output the clustering results
+	public void outputResults(String outputFile){
 		
 	}
+	
 	static void main(){
 		//Input File
 		String input = "cluster.csv";
@@ -33,6 +52,6 @@ public class SeqKmeansFor2Dpoints {
 		TwoDCase.rawData = loader.loadData();
 		
 		//running the Kmeans clustering
-		
+		TwoDCase.KmeansCluster(k);
 	}
 }
