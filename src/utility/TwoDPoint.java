@@ -4,6 +4,16 @@ import java.io.Serializable;
 public class TwoDPoint implements Serializable{
     private double x;
     private double y;
+    
+    public TwoDPoint(){
+    	
+    }
+    
+    public TwoDPoint(double x , double y){
+    	this.x = x;
+    	this.y = y;
+    }
+    
     public double getX() {
         return x;
     }
