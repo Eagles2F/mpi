@@ -1,5 +1,5 @@
 /*
- * This is the sequencial Kmeans clustering class for the 2D points data set
+ * This is the sequencial Kmeans clustering class for the DNA Strands data set
  * 
  * @Author: Yifan Li
  * @Date: 12/1/2014
@@ -13,26 +13,26 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import utility.TwoDCluster;
-import utility.TwoDPoint;
-import utility.TwoDpointsDataLoader;
+import utility.DNAStrandDataLoader;
+import utility.DNAStrandCluster;
+import utility.DNAStrand;
 
-public class SeqKmeansFor2Dpoints {
-	private ArrayList<TwoDPoint> rawData;
-	private ArrayList<TwoDCluster> clusters;
+public class SeqKmeansForDNAStrands {
+	private ArrayList<DNAStrand> rawData;
+	private ArrayList<DNAStrandCluster> clusters;
 	private int miu=100; //iterating rounds
 	
-	public SeqKmeansFor2Dpoints(){
-		this.setRawData(new ArrayList<TwoDPoint>());
-		this.clusters = new ArrayList<TwoDCluster>();
+	public SeqKmeansForDNAStrands(){
+		this.rawData = new ArrayList<DNAStrand>();
+		this.clusters = new ArrayList<DNAStrandCluster>();
 	}
 	
 	//the kmeans clustering method
 	public void KmeansCluster(int k){
 		//step 1: initialize centroids and clusters
 		for(int i =0; i<k;i++){
-			TwoDCluster cluster = new TwoDCluster();
-			cluster.setCentroid(getRawData().get(i));
+			DNAStrandCluster cluster = new DNAStrandCluster();
+			cluster.setCentroid(rawData.get(i));
 			this.clusters.add(cluster);
 		}
 		
@@ -42,8 +42,8 @@ public class SeqKmeansFor2Dpoints {
 				this.clusters.get(n).clearCluster();
 			}
 			//step 2: assign each data point to a cluster which is closer to it.
-			for(int j=0;j<this.getRawData().size();j++){
-				TwoDPoint p = getRawData().get(j);
+			for(int j=0;j<this.rawData.size();j++){
+				DNAStrand p = rawData.get(j);
 				
 				//calculate which cluster is closer to the data point
 				int idCluster = 0;
@@ -89,11 +89,9 @@ public class SeqKmeansFor2Dpoints {
 		try(BufferedWriter bw= new BufferedWriter(new FileWriter(outputFile))){
 			for(int i=0;i<this.clusters.size();i++){
 				bw.write("Cluster "+i+"\n");
-				bw.write(" Centroid: "+this.clusters.get(i).getCentroid().getX()
-						+","+this.clusters.get(i).getCentroid().getY()+"\n");
+				bw.write(" Centroid: "+this.clusters.get(i).getCentroid().getStrand()+"\n");
 				for(int j=0;j<this.clusters.get(i).getCluster().size();j++){
-					bw.write("     "+this.clusters.get(i).getCluster().get(j).getX()+
-							","+this.clusters.get(i).getCluster().get(j).getX()
+					bw.write("     "+this.clusters.get(i).getCluster().get(j).getStrand()
 							+" distance to the Centroid:"+
 							this.clusters.get(i).getCluster().get(j).distance(this.clusters.get(i).getCentroid())
 							+"\n");
@@ -107,29 +105,21 @@ public class SeqKmeansFor2Dpoints {
 	
 	public static void main(String[] args){
 		//Input&Output File
-		String input = "../input/cluster.csv";
-		String output = "../output/twoDResult.txt";
+		String input = "../input/DNA.txt";
+		String output = "../output/DNAResult.txt";
 		//number of clusters
 		int k=2;
 		
 		
-		SeqKmeansFor2Dpoints TwoDCase = new SeqKmeansFor2Dpoints();
+		SeqKmeansForDNAStrands DNACase = new SeqKmeansForDNAStrands();
 		//load the data
-		TwoDpointsDataLoader loader = new TwoDpointsDataLoader(input);
-		TwoDCase.setRawData(loader.loadData());
+		DNAStrandDataLoader loader = new DNAStrandDataLoader(input);
+		DNACase.rawData = loader.loadData();
 		
 		//running the Kmeans clustering
-		TwoDCase.KmeansCluster(k);
+		DNACase.KmeansCluster(k);
 		
 		//output the result
-		TwoDCase.outputResults(output);
+		DNACase.outputResults(output);
 	}
-
-    public ArrayList<TwoDPoint> getRawData() {
-        return rawData;
-    }
-
-    public void setRawData(ArrayList<TwoDPoint> rawData) {
-        this.rawData = rawData;
-    }
 }
