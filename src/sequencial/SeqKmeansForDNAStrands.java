@@ -20,7 +20,23 @@ import utility.DNAStrand;
 public class SeqKmeansForDNAStrands {
 	private ArrayList<DNAStrand> rawData;
 	private ArrayList<DNAStrandCluster> clusters;
-	private int miu=100; //iterating rounds
+	public ArrayList<DNAStrand> getRawData() {
+        return rawData;
+    }
+
+    public void setRawData(ArrayList<DNAStrand> rawData) {
+        this.rawData = rawData;
+    }
+
+    public ArrayList<DNAStrandCluster> getClusters() {
+        return clusters;
+    }
+
+    public void setClusters(ArrayList<DNAStrandCluster> clusters) {
+        this.clusters = clusters;
+    }
+
+    private int miu=100; //iterating rounds
 	
 	public SeqKmeansForDNAStrands(){
 		this.rawData = new ArrayList<DNAStrand>();
