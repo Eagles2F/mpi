@@ -74,11 +74,12 @@ public class ParallelTwoD{
         
         MPI.Init(args);
         System.out.println("get rank");
-        pTwoD.rank = MPI.COMM_WORLD.Rank();
+        
         System.out.println("get size");
         size = MPI.COMM_WORLD.Size() - 1;
         ParallelTwoD pTwoD = new ParallelTwoD(Integer.valueOf(args[7]),size);
         pTwoD.setMiu(Integer.valueOf(args[8]));
+        pTwoD.rank = MPI.COMM_WORLD.Rank();
         if(size < 2) {
             System.out.println("Please configur more than 2 processes.");
             return;
