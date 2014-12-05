@@ -19,11 +19,21 @@ import utility.TwoDpointsDataLoader;
 public class ParallelDNA{
     private ArrayList<DNAStrand> rawData;
     private ArrayList<DNAStrandCluster> clusters;
+    private ArrayList<Long> runningTime; //every process has a running time
+    public ArrayList<Long> getRunningTime() {
+        return runningTime;
+    }
+    public void setRunningTime(ArrayList<Long> runningTime) {
+        this.runningTime = runningTime;
+    }
+
+
     public int rank;
     
 
     private int miu; //iterating rounds
     private int k;
+    private int size; //process size
     
     public int getK() {
         return k;
@@ -46,6 +56,10 @@ public class ParallelDNA{
         for(int i =0; i<k;i++){
             DNAStrandCluster cluster = new DNAStrandCluster();
             this.clusters.add(cluster);
+        }
+        for(int i=0;i<size;i++){
+            Long zero = new Long(0);
+            runningTime.add(zero);
         }
     }
     public ArrayList<DNAStrand> getRawData() {
@@ -94,6 +108,10 @@ public class ParallelDNA{
             long end = System.currentTimeMillis();
             long duration = end - start;
             System.out.println("duration: "+duration);
+            System.out.println("runtime:");
+            for(int i=0;i<pDNA.getRunningTime().size();i++){
+            System.out.println("proc "+(i+1)+": "+pDNA.getRunningTime()    .get(i));
+            }
             pDNA.outputResults(output);
             
         }else{
@@ -108,7 +126,7 @@ public class ParallelDNA{
                                                     
                    e.printStackTrace();
                }
-               
+               long start = System.currentTimeMillis();
                MPIMessage msg = (MPIMessage)messageArray[0];
                System.out.println("Message received: " + msg.getCmdId());
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
@@ -143,8 +161,11 @@ public class ParallelDNA{
                    for(int m=0;m<pDNA.k;m++){
                        pDNA.clusters.get(m).setCentroid(msg.getDNACentroid().get(m));
                    }
+                   long end = System.currentTimeMillis();
+                   long duration = end - start;
                    msg.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
                    msg.setDNAClusters(pDNA.clusters);
+                   msg.setRunningTime(duration);
                    messageArray[0] = msg;
                    messageArray[1] = null;
                    try{
