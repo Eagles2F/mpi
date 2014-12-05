@@ -50,6 +50,7 @@ public class ParallelDNA{
     public ParallelDNA(int k,int size){
         this.rawData = new ArrayList<DNAStrand>();
         this.clusters = new ArrayList<DNAStrandCluster>();
+        this.runningTime = new ArrayList<Long>();
         this.rawData = null;
         this.k = k;
         this.miu = 10;

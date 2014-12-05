@@ -38,6 +38,7 @@ public class ParallelTwoD{
     public ParallelTwoD(int k,int size){
         this.rawData = new ArrayList<TwoDPoint>();
         this.clusters = new ArrayList<TwoDCluster>();
+        this.runningTime = new ArrayList<Long>();
         this.rawData = null;
         this.k = k;
         this.miu = 10;
