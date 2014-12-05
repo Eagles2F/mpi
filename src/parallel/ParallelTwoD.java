@@ -136,7 +136,7 @@ public class ParallelTwoD{
                        
 
                        //assign the data point into the cluster
-                       System.out.println("rank "+pTwoD.rank+"x: "+p.getX()+"y: "+p.getY());
+                       //System.out.println("rank "+pTwoD.rank+"x: "+p.getX()+"y: "+p.getY());
                        pTwoD.clusters.get(idCluster).add(p);
                    }
                    for(int m=0;m<pTwoD.k;m++){
@@ -196,7 +196,7 @@ public class ParallelTwoD{
             Object[] MPIMsgArray = new Object[2];
             MPIMsgArray[0] = msg;
             MPIMsgArray[1] = null;
-            System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+            //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
             try{
                 MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
             }catch(MPIException e) {
@@ -226,7 +226,7 @@ public class ParallelTwoD{
                 MPIMessage msg = (MPIMessage)MPIMsgArray[0];
                 //conbine the subCluster from every node
                 for(int n=0;n<k;n++){
-                    System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
+                    //System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
                     if(getClusters().size() < k){
                         getClusters().add(msg.getClusters().get(n));
                         getClusters().get(n).setCentroid(msg.getClusters().get(n).getCentroid());
@@ -256,7 +256,7 @@ public class ParallelTwoD{
                 }
                 MPIMsgArray[0] = msg;
                 MPIMsgArray[1] = null;
-                System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+                //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
                 try{
                     MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
                 }catch(MPIException e) {

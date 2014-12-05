@@ -197,7 +197,7 @@ public class ParallelDNA{
             Object[] MPIMsgArray = new Object[2];
             MPIMsgArray[0] = msg;
             MPIMsgArray[1] = null;
-            System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+            //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
             try{
                 MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
             }catch(MPIException e) {
@@ -256,7 +256,7 @@ public class ParallelDNA{
                 }
                 MPIMsgArray[0] = msg;
                 MPIMsgArray[1] = null;
-                System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+                //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
                 try{
                     MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
                 }catch(MPIException e) {
