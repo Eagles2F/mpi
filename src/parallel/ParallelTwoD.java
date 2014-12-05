@@ -123,14 +123,14 @@ public class ParallelTwoD{
                
                long start = System.currentTimeMillis();
                MPIMessage msg = (MPIMessage)messageArray[0];
-               System.out.println("Message received: " + msg.getCmdId());
+               
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
                    //only transmit the rawData once
                    if(pTwoD.getRawData() == null){
                        pTwoD.setRawData(msg.getRawData());
                    }
                  //step 2: assign each data point to a cluster which is closer to it.
-                   System.out.println("rank "+pTwoD.rank+"rawData size "+pTwoD.getRawData().size());
+                   
                    //clear the cluster every time
                    for(int i=0;i<pTwoD.k;i++){
                         pTwoD.clusters.get(i).clearCluster();
@@ -261,7 +261,7 @@ public class ParallelTwoD{
                 
             }
                 long time = runningTime.get(j) + msg.getRunningTime();
-                System.out.println("new run time proc "+(j+1)+" "+time);
+                //System.out.println("new run time proc "+(j+1)+" "+time);
                 runningTime.set(j, time);
             }
             

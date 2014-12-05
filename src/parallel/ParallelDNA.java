@@ -131,7 +131,7 @@ public class ParallelDNA{
                }
                long start = System.currentTimeMillis();
                MPIMessage msg = (MPIMessage)messageArray[0];
-               System.out.println("Message received: " + msg.getCmdId());
+               //System.out.println("Message received: " + msg.getCmdId());
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
                    //only transmit the rawData once
                    if(pDNA.getRawData() == null){
@@ -260,7 +260,7 @@ public class ParallelDNA{
                 
             }
                 long time = runningTime.get(j) + msg.getRunningTime();
-                System.out.println("new run time proc "+(j+1)+" "+time);
+                //System.out.println("new run time proc "+(j+1)+" "+time);
                 runningTime.set(j, time);
             }
             
