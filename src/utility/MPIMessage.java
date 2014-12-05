@@ -24,6 +24,7 @@ public class MPIMessage implements Serializable{
     private MessageId msgId;
     private CommandId cmdId;
     private ResponseId rspId;
+    private long runningTime;
     private ArrayList<TwoDCluster> clusters;
     private ArrayList<TwoDPoint> rawData;
     private ArrayList<TwoDPoint> centroid;
@@ -111,6 +112,12 @@ public class MPIMessage implements Serializable{
     }
     public void setDNARawData(ArrayList<DNAStrand> dNARawData) {
         DNARawData = dNARawData;
+    }
+    public long getRunningTime() {
+        return runningTime;
+    }
+    public void setRunningTime(long runningTime) {
+        this.runningTime = runningTime;
     }
     
 }

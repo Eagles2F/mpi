@@ -15,11 +15,13 @@ import utility.TwoDpointsDataLoader;
 public class ParallelTwoD{
     private ArrayList<TwoDPoint> rawData;
     private ArrayList<TwoDCluster> clusters;
+    private ArrayList<Long> runningTime; //every process has a running time
     
 
     private int miu; //iterating rounds
     private int k;
     public int rank;
+    private int size; //process size
     
     public int getK() {
         return k;
@@ -33,7 +35,7 @@ public class ParallelTwoD{
     public void setMiu(int miu) {
         this.miu = miu;
     }
-    public ParallelTwoD(int k){
+    public ParallelTwoD(int k,int size){
         this.rawData = new ArrayList<TwoDPoint>();
         this.clusters = new ArrayList<TwoDCluster>();
         this.rawData = null;
@@ -42,6 +44,11 @@ public class ParallelTwoD{
         for(int i =0; i<k;i++){
             TwoDCluster cluster = new TwoDCluster();
             this.clusters.add(cluster);
+            
+        }
+        for(int i=0;i<size;i++){
+            Long zero = new Long(0);
+            runningTime.add(zero);
         }
     }
     public ArrayList<TwoDPoint> getRawData() {
@@ -61,15 +68,17 @@ public class ParallelTwoD{
     }
     public static void main(String[] args){
         int size;
+        
     try {
         System.out.println("start Init");
-        ParallelTwoD pTwoD = new ParallelTwoD(2);
+        
         MPI.Init(args);
         System.out.println("get rank");
         pTwoD.rank = MPI.COMM_WORLD.Rank();
         System.out.println("get size");
         size = MPI.COMM_WORLD.Size() - 1;
-        
+        ParallelTwoD pTwoD = new ParallelTwoD(Integer.valueOf(args[7]),size);
+        pTwoD.setMiu(Integer.valueOf(args[8]));
         if(size < 2) {
             System.out.println("Please configur more than 2 processes.");
             return;
@@ -84,13 +93,17 @@ public class ParallelTwoD{
             //load the data
             TwoDpointsDataLoader loader = new TwoDpointsDataLoader(input);
             pTwoD.setRawData(loader.loadData());
-            System.out.println("SSSSS"); 
+             
             long start = System.currentTimeMillis();
             pTwoD.assignTasks(pTwoD.getRawData(),size,pTwoD.k);
             pTwoD.repeat(size, pTwoD.k);
             long end = System.currentTimeMillis();
             long duration = end - start;
             System.out.println("duration: "+duration);
+            System.out.println("runtime:");
+            for(int i=0;i<pTwoD.getRunningTime().size();i++){
+                System.out.println("proc "+(i+1)+": "+pTwoD.getRunningTime().get(i));
+            }
             pTwoD.outputResults(output);
             
         }else{
@@ -106,6 +119,7 @@ public class ParallelTwoD{
                    e.printStackTrace();
                }
                
+               long start = System.currentTimeMillis();
                MPIMessage msg = (MPIMessage)messageArray[0];
                System.out.println("Message received: " + msg.getCmdId());
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
@@ -142,8 +156,11 @@ public class ParallelTwoD{
                    for(int m=0;m<pTwoD.k;m++){
                        pTwoD.clusters.get(m).setCentroid(msg.getCentroid().get(m));
                    }
+                   long end = System.currentTimeMillis();
+                   long duration = end - start;
                    msg.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
                    msg.setClusters(pTwoD.clusters);
+                   msg.setRunningTime(duration);
                    messageArray[0] = msg;
                    messageArray[1] = null;
                    try{
@@ -170,6 +187,12 @@ public class ParallelTwoD{
        }
 }
 
+    public ArrayList<Long> getRunningTime() {
+        return runningTime;
+    }
+    public void setRunningTime(ArrayList<Long> runningTime) {
+        this.runningTime = runningTime;
+    }
     private void assignTasks(ArrayList<TwoDPoint> rawData2, int size, int k) {
       //step 1: initialize centroids and clusters
         for(int j=0;j<size;j++){
@@ -235,6 +258,9 @@ public class ParallelTwoD{
                 }
                 
             }
+                long time = runningTime.get(j+1) + msg.getRunningTime();
+                System.out.println("new run time proc "+(j+1)+" "+time);
+                runningTime.set(j, time);
             }
             
             //step 3: recalculate the centroids in each cluster
