@@ -259,6 +259,9 @@ public class ParallelDNA{
                 }
                 
             }
+                long time = runningTime.get(j) + msg.getRunningTime();
+                System.out.println("new run time proc "+(j+1)+" "+time);
+                runningTime.set(j, time);
             }
             
             //step 3: recalculate the centroids in each cluster
@@ -266,6 +269,7 @@ public class ParallelDNA{
                 clusters.get(n).calculateCentroid();
                 
             }
+            
             if(i == (getMiu()-1)){
                 return;
             }

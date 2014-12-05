@@ -260,7 +260,7 @@ public class ParallelTwoD{
                 }
                 
             }
-                long time = runningTime.get(j+1) + msg.getRunningTime();
+                long time = runningTime.get(j) + msg.getRunningTime();
                 System.out.println("new run time proc "+(j+1)+" "+time);
                 runningTime.set(j, time);
             }
