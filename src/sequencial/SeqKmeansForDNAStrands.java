@@ -133,7 +133,12 @@ public class SeqKmeansForDNAStrands {
 		DNACase.rawData = loader.loadData();
 		
 		//running the Kmeans clustering
+        long start = System.currentTimeMillis();
+		//running the Kmeans clustering
 		DNACase.KmeansCluster(k);
+		long end = System.currentTimeMillis();
+        long duration = end - start;
+        System.out.println("duration: "+duration);
 		
 		//output the result
 		DNACase.outputResults(output);

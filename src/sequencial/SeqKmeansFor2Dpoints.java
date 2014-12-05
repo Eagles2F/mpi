@@ -119,7 +119,11 @@ public class SeqKmeansFor2Dpoints {
 		TwoDCase.setRawData(loader.loadData());
 		
 		//running the Kmeans clustering
+		long start = System.currentTimeMillis();
 		TwoDCase.KmeansCluster(k);
+		long end = System.currentTimeMillis();
+        long duration = end - start;
+        System.out.println("duration: "+duration);
 		
 		//output the result
 		TwoDCase.outputResults(output);
