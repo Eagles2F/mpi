@@ -47,7 +47,7 @@ public class ParallelDNA{
     public void setMiu(int miu) {
         this.miu = miu;
     }
-    public ParallelDNA(int k){
+    public ParallelDNA(int k,int size){
         this.rawData = new ArrayList<DNAStrand>();
         this.clusters = new ArrayList<DNAStrandCluster>();
         this.rawData = null;
@@ -81,13 +81,15 @@ public class ParallelDNA{
         int size;
     try {
         System.out.println("start Init");
-        ParallelDNA pDNA = new ParallelDNA(2);
+         
         MPI.Init(args);
         System.out.println("get rank");
         pDNA.rank = MPI.COMM_WORLD.Rank();
         System.out.println("get size");
         size = MPI.COMM_WORLD.Size() - 1;
-        
+        ParallelDNA pDNA = new ParallelDNA(Integer.valueOf(args[0]),size);
+        pDNA.setMiu(Integer.valueOf(args[1]));
+        pDNA.rank = MPI.COMM_WORLD.Rank();
         if(size < 2) {
             System.out.println("Please configur more than 2 processes.");
             return;
