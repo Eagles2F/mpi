@@ -84,7 +84,7 @@ public class ParallelDNA{
          
         MPI.Init(args);
         System.out.println("get rank");
-        pDNA.rank = MPI.COMM_WORLD.Rank();
+        
         System.out.println("get size");
         size = MPI.COMM_WORLD.Size() - 1;
         ParallelDNA pDNA = new ParallelDNA(Integer.valueOf(args[0]),size);
