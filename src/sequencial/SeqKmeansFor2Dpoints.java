@@ -22,9 +22,10 @@ public class SeqKmeansFor2Dpoints {
 	private ArrayList<TwoDCluster> clusters;
 	private int miu=100; //iterating rounds
 	
-	public SeqKmeansFor2Dpoints(){
+	public SeqKmeansFor2Dpoints(int miu){
 		this.setRawData(new ArrayList<TwoDPoint>());
 		this.clusters = new ArrayList<TwoDCluster>();
+		this.miu = miu;
 	}
 	
 	//the kmeans clustering method
@@ -106,14 +107,19 @@ public class SeqKmeansFor2Dpoints {
 	}
 	
 	public static void main(String[] args){
+	    if(args.length != 2){
+	        System.out.println("Usage:java sequencial.SeqKmeansFor2Dpoints  <number of clusters> <number of iterations>");
+	    }
+	    
 		//Input&Output File
 		String input = "../input/cluster.csv";
 		String output = "../output/twoDResult.txt";
 		//number of clusters
-		int k=2;
+		int k=Integer.valueOf(args[0]);
+	    int miu = Integer.valueOf(args[1]);
 		
 		
-		SeqKmeansFor2Dpoints TwoDCase = new SeqKmeansFor2Dpoints();
+		SeqKmeansFor2Dpoints TwoDCase = new SeqKmeansFor2Dpoints(miu);
 		//load the data
 		TwoDpointsDataLoader loader = new TwoDpointsDataLoader(input);
 		TwoDCase.setRawData(loader.loadData());
