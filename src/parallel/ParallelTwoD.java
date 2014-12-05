@@ -32,12 +32,16 @@ public class ParallelTwoD{
     public void setMiu(int miu) {
         this.miu = miu;
     }
-    public ParallelTwoD(){
+    public ParallelTwoD(int k){
         this.rawData = new ArrayList<TwoDPoint>();
         this.clusters = new ArrayList<TwoDCluster>();
         this.rawData = null;
-        this.k = 2;
-        this.miu = 100;
+        this.k = k;
+        this.miu = 10;
+        for(int i =0; i<k;i++){
+            TwoDCluster cluster = new TwoDCluster();
+            this.clusters.add(cluster);
+        }
     }
     public ArrayList<TwoDPoint> getRawData() {
         return rawData;
@@ -58,15 +62,18 @@ public class ParallelTwoD{
         int rank;
         int size;
     try {
+        System.out.println("start Init");
         MPI.Init(args);
+        System.out.println("get rank");
         rank = MPI.COMM_WORLD.Rank();
+        System.out.println("get size");
         size = MPI.COMM_WORLD.Size() - 1;
         
         if(size < 2) {
             System.out.println("Please configur more than 2 processes.");
             return;
         }
-        ParallelTwoD pTwoD = new ParallelTwoD();
+        ParallelTwoD pTwoD = new ParallelTwoD(2);
         if(rank == 0) {
             String input = "../input/cluster.csv";
             String output = "../output/twoDResult.txt";
@@ -74,19 +81,26 @@ public class ParallelTwoD{
             
             
             
-            SeqKmeansFor2Dpoints TwoDCase = new SeqKmeansFor2Dpoints();
             //load the data
             TwoDpointsDataLoader loader = new TwoDpointsDataLoader(input);
-            TwoDCase.setRawData(loader.loadData());
-            
-            pTwoD.assignTasks(TwoDCase.getRawData(),size,pTwoD.k);
+            pTwoD.setRawData(loader.loadData());
+            System.out.println("SSSSS"); 
+            pTwoD.assignTasks(pTwoD.getRawData(),size,pTwoD.k);
             pTwoD.repeat(size, pTwoD.k);
             pTwoD.outputResults(output);
             
         }else{
            while(true){
                Object[] messageArray = new Object[2];
-               MPI.COMM_WORLD.Recv(messageArray, 0, 2, MPI.OBJECT, 0, 0);
+               try{
+                   MPI.COMM_WORLD.Recv(messageArray, 0, 2, MPI.OBJECT, 0, 0);
+               }catch(MPIException e) {
+                              
+                   e.printStackTrace();
+               } catch(Exception e) {
+                                                    
+                   e.printStackTrace();
+               }
                
                MPIMessage msg = (MPIMessage)messageArray[0];
                System.out.println("Message received: " + msg.getCmdId());
@@ -104,24 +118,37 @@ public class ParallelTwoD{
                        double disMin = 9999999;//infinite
                        double disCurrent = 0;
                        for(int n=0;n<pTwoD.k;n++){
-                            disCurrent = p.distance(pTwoD.clusters.get(n).getCentroid());
+                            disCurrent = p.distance(msg.getCentroid().get(n));
                             if(disCurrent<disMin){ 
                                 idCluster = n;
                                 disMin = disCurrent;
                             }
                        }
                        
+
                        //assign the data point into the cluster
                        pTwoD.clusters.get(idCluster).add(p);
+                   }
+                   for(int m=0;m<pTwoD.k;m++){
+                       pTwoD.clusters.get(m).setCentroid(msg.getCentroid().get(m));
                    }
                    msg.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
                    msg.setClusters(pTwoD.clusters);
                    messageArray[0] = msg;
                    messageArray[1] = null;
-                   MPI.COMM_WORLD.Send(messageArray, 0, 2, MPI.OBJECT, 0, 0);
+                   try{
+                       MPI.COMM_WORLD.Send(messageArray, 0, 2, MPI.OBJECT, 0, 0);
+                   }catch(MPIException e) {
+                                  
+                       e.printStackTrace();
+                   } catch(Exception e) {
+                                                        
+                       e.printStackTrace();
+                   }
                }
            }
         }
+        System.out.println("finalize");
         MPI.Finalize();
         
        }catch(MPIException e) {
@@ -140,20 +167,28 @@ public class ParallelTwoD{
             msg.setCmdId(MPIMessage.CommandId.CLUSTER);
             for(int i =0; i<k;i++){
                 
-                msg.setCentroid(this.getRawData().get(i));
+                msg.addCentroid(rawData2.get(i));
                 
             }
             ArrayList<TwoDPoint> rawDataSend = new ArrayList<TwoDPoint>();
-            int chunk = this.getRawData().size()/size;
+            int chunk = rawData2.size()/size;
             for(int m=j*chunk;m<(j+1)*chunk;m++){
-                rawDataSend.add(this.rawData.get(m));
+                rawDataSend.add(rawData2.get(m));
             }
             msg.setRawData(rawDataSend);
             Object[] MPIMsgArray = new Object[2];
             MPIMsgArray[0] = msg;
             MPIMsgArray[1] = null;
-            System.out.println("node 0 send to node " + j + ", message " + msg.getCmdId());
-            MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j, 0);
+            System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+            try{
+                MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
+            }catch(MPIException e) {
+                           
+                e.printStackTrace();
+            } catch(Exception e) {
+                                                 
+                e.printStackTrace();
+            }
         }
         
     }
@@ -162,13 +197,26 @@ public class ParallelTwoD{
         for(int i=0;i<getMiu();i++){
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];
-                MPI.COMM_WORLD.Recv(MPIMsgArray, 0, 2, MPI.OBJECT, j, 0);
+                try{
+                    MPI.COMM_WORLD.Recv(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
+                }catch(MPIException e) {
+                               
+                    e.printStackTrace();
+                } catch(Exception e) {
+                                                     
+                    e.printStackTrace();
+                }
                 MPIMessage msg = (MPIMessage)MPIMsgArray[0];
                 //conbine the subCluster from every node
                 for(int n=0;n<k;n++){
-                    getClusters().get(n).addCluster(msg.getClusters().get(n));
+                    if(getClusters().size() < k){
+                        getClusters().add(msg.getClusters().get(n));
+                        getClusters().get(n).setCentroid(msg.getClusters().get(n).getCentroid());
+                    }else{
+                        getClusters().get(n).addCluster(msg.getClusters().get(n));
                 }
                 
+            }
             }
             
             //step 3: recalculate the centroids in each cluster
@@ -182,17 +230,26 @@ public class ParallelTwoD{
                 msg.setCmdId(MPIMessage.CommandId.CLUSTER);
                 for(int q =0; q<k;q++){
                     
-                    msg.setCentroid(clusters.get(q).getCentroid());
-                    
+                    msg.addCentroid(clusters.get(q).getCentroid());
+                    getClusters().get(q).clearCluster();
                 }
                 MPIMsgArray[0] = msg;
                 MPIMsgArray[1] = null;
-                System.out.println("node 0 send to node " + j + ", message " + msg.getCmdId());
-                MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j, 0);
+                System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+                try{
+                    MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
+                }catch(MPIException e) {
+                               
+                    e.printStackTrace();
+                } catch(Exception e) {
+                                                     
+                    e.printStackTrace();
+                }
             }
             
         }
     }
+
     
   //output the clustering results
     public void outputResults(String outputFile){

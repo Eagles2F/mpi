@@ -46,6 +46,9 @@ public class DNAStrandCluster implements Serializable{
     			mindistance = distance.get(i);
     		}
     	}
+    	if(centroid == null){
+    	    centroid = new DNAStrand(null);
+         }
     	this.centroid = this.cluster.get(id);
     }
     

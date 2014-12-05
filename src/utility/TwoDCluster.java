@@ -44,6 +44,9 @@ public class TwoDCluster implements Serializable{
         }
         xMean = xMean/count;
         yMean = yMean/count;
+        if(centroid == null){
+            centroid = new TwoDPoint();
+        }
         centroid.setX(xMean);
         centroid.setY(yMean);
     }

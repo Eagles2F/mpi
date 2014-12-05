@@ -26,10 +26,14 @@ public class MPIMessage implements Serializable{
     private ResponseId rspId;
     private ArrayList<TwoDCluster> clusters;
     private ArrayList<TwoDPoint> rawData;
-    private TwoDPoint centroid;
-    private DNAStrand DNACentroid;
+    private ArrayList<TwoDPoint> centroid;
+    private ArrayList<DNAStrand> DNACentroid;
     private ArrayList<DNAStrandCluster> DNAClusters;
     private ArrayList<DNAStrand> DNARawData;
+    public MPIMessage(){
+        centroid = new ArrayList<TwoDPoint>();
+        DNACentroid = new ArrayList<DNAStrand>();
+    }
     public String getFileName() {
         return fileName;
     }
@@ -81,23 +85,26 @@ public class MPIMessage implements Serializable{
     public void setRawData(ArrayList<TwoDPoint> rawData) {
         this.rawData = rawData;
     }
-    public TwoDPoint getCentroid() {
+    public ArrayList<TwoDPoint> getCentroid() {
         return centroid;
     }
-    public void setCentroid(TwoDPoint centroid) {
-        this.centroid = centroid;
+    public void addCentroid(TwoDPoint centroid) {
+        this.centroid.add(centroid);
     }
-    public DNAStrand getDNACentroid() {
+    public ArrayList<DNAStrand> getDNACentroid() {
         return DNACentroid;
     }
-    public void setDNACentroid(DNAStrand dNACentroid) {
-        DNACentroid = dNACentroid;
+    public void addDNACentroid(DNAStrand dNACentroid) {
+        DNACentroid.add(dNACentroid);
     }
     public ArrayList<DNAStrandCluster> getDNAClusters() {
         return DNAClusters;
     }
     public void setDNAClusters(ArrayList<DNAStrandCluster> dNAClusters) {
         DNAClusters = dNAClusters;
+    }
+    public void addDNAClusters(DNAStrandCluster dNACluster) {
+        DNAClusters.add(dNACluster);
     }
     public ArrayList<DNAStrand> getDNARawData() {
         return DNARawData;
