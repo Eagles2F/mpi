@@ -85,8 +85,12 @@ public class ParallelTwoD{
             TwoDpointsDataLoader loader = new TwoDpointsDataLoader(input);
             pTwoD.setRawData(loader.loadData());
             System.out.println("SSSSS"); 
+            long start = System.currentTimeMillis();
             pTwoD.assignTasks(pTwoD.getRawData(),size,pTwoD.k);
             pTwoD.repeat(size, pTwoD.k);
+            long end = System.currentTimeMillis();
+            long duration = end - start;
+            System.out.println("duration: "+duration);
             pTwoD.outputResults(output);
             
         }else{
@@ -180,6 +184,13 @@ public class ParallelTwoD{
             int chunk = rawData2.size()/size;
             for(int m=j*chunk;m<(j+1)*chunk;m++){
                 rawDataSend.add(rawData2.get(m));
+            }
+            //for the last chunk, need append the remainder of the rawData
+            if(j == (size-1)){
+                
+                for(int l=(j+1)*chunk;l<rawData2.size();l++){
+                    rawDataSend.add(rawData2.get(l));
+                }
             }
             msg.setRawData(rawDataSend);
             Object[] MPIMsgArray = new Object[2];
@@ -286,7 +297,7 @@ public class ParallelTwoD{
                         +","+this.clusters.get(i).getCentroid().getY()+"\n");
                 for(int j=0;j<this.clusters.get(i).getCluster().size();j++){
                     bw.write("     "+this.clusters.get(i).getCluster().get(j).getX()+
-                            ","+this.clusters.get(i).getCluster().get(j).getX()
+                            ","+this.clusters.get(i).getCluster().get(j).getY()
                             +" distance to the Centroid:"+
                             this.clusters.get(i).getCluster().get(j).distance(this.clusters.get(i).getCentroid())
                             +"\n");

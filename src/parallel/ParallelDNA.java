@@ -88,9 +88,12 @@ public class ParallelDNA{
             //load the data
             DNAStrandDataLoader loader = new DNAStrandDataLoader(input);
             pDNA.setRawData(loader.loadData());
-            System.out.println("SSSSS"); 
+            long start = System.currentTimeMillis();
             pDNA.assignTasks(pDNA.getRawData(),size,pDNA.k);
             pDNA.repeat(size, pDNA.k);
+            long end = System.currentTimeMillis();
+            long duration = end - start;
+            System.out.println("duration: "+duration);
             pDNA.outputResults(output);
             
         }else{
@@ -182,6 +185,13 @@ public class ParallelDNA{
             int chunk = rawData2.size()/size;
             for(int m=j*chunk;m<(j+1)*chunk;m++){
                 rawDataSend.add(rawData2.get(m));
+            }
+            //for the last chunk, need append the remainder of the rawData
+            if(j == (size-1)){
+            
+                for(int l=(j+1)*chunk;l<rawData2.size();l++){
+                rawDataSend.add(rawData2.get(l));
+                }
             }
             msg.setDNARawData(rawDataSend);
             Object[] MPIMsgArray = new Object[2];
