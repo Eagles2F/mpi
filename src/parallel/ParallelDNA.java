@@ -19,6 +19,7 @@ import utility.TwoDpointsDataLoader;
 public class ParallelDNA{
     private ArrayList<DNAStrand> rawData;
     private ArrayList<DNAStrandCluster> clusters;
+    public int rank;
     
 
     private int miu; //iterating rounds
@@ -63,13 +64,13 @@ public class ParallelDNA{
         this.clusters = clusters;
     }
     public static void main(String[] args){
-        int rank;
         int size;
     try {
         System.out.println("start Init");
+        ParallelDNA pDNA = new ParallelDNA(2);
         MPI.Init(args);
         System.out.println("get rank");
-        rank = MPI.COMM_WORLD.Rank();
+        pDNA.rank = MPI.COMM_WORLD.Rank();
         System.out.println("get size");
         size = MPI.COMM_WORLD.Size() - 1;
         
@@ -77,10 +78,9 @@ public class ParallelDNA{
             System.out.println("Please configur more than 2 processes.");
             return;
         }
-        ParallelDNA pDNA = new ParallelDNA(2);
-        if(rank == 0) {
-            String input = "../input/cluster.csv";
-            String output = "../output/twoDResult.txt";
+        if(pDNA.rank == 0) {
+            String input = "../input/DNA.txt";
+            String output = "../output/DNAResult.txt";
             //number of clusters
             
             
@@ -114,6 +114,10 @@ public class ParallelDNA{
                        pDNA.setRawData(msg.getDNARawData());
                    }
                  //step 2: assign each data point to a cluster which is closer to it.
+                 //clear the cluster every time
+                for(int i=0;i<pDNA.k;i++){
+                     pDNA.clusters.get(i).clearCluster();
+                }
                    for(int j=0;j<pDNA.getRawData().size();j++){
                        DNAStrand p = pDNA.getRawData().get(j);
                        
@@ -227,6 +231,9 @@ public class ParallelDNA{
             for(int n=0;n<k;n++){
                 clusters.get(n).calculateCentroid();
                 
+            }
+            if(i == (getMiu()-1)){
+                return;
             }
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];

@@ -19,6 +19,7 @@ public class ParallelTwoD{
 
     private int miu; //iterating rounds
     private int k;
+    public int rank;
     
     public int getK() {
         return k;
@@ -59,13 +60,13 @@ public class ParallelTwoD{
         this.clusters = clusters;
     }
     public static void main(String[] args){
-        int rank;
         int size;
     try {
         System.out.println("start Init");
+        ParallelTwoD pTwoD = new ParallelTwoD(2);
         MPI.Init(args);
         System.out.println("get rank");
-        rank = MPI.COMM_WORLD.Rank();
+        pTwoD.rank = MPI.COMM_WORLD.Rank();
         System.out.println("get size");
         size = MPI.COMM_WORLD.Size() - 1;
         
@@ -73,8 +74,7 @@ public class ParallelTwoD{
             System.out.println("Please configur more than 2 processes.");
             return;
         }
-        ParallelTwoD pTwoD = new ParallelTwoD(2);
-        if(rank == 0) {
+        if(pTwoD.rank == 0) {
             String input = "../input/cluster.csv";
             String output = "../output/twoDResult.txt";
             //number of clusters
@@ -110,6 +110,11 @@ public class ParallelTwoD{
                        pTwoD.setRawData(msg.getRawData());
                    }
                  //step 2: assign each data point to a cluster which is closer to it.
+                   System.out.println("rank "+pTwoD.rank+"rawData size "+pTwoD.getRawData().size());
+                   //clear the cluster every time
+                   for(int i=0;i<pTwoD.k;i++){
+                        pTwoD.clusters.get(i).clearCluster();
+                   }
                    for(int j=0;j<pTwoD.getRawData().size();j++){
                        TwoDPoint p = pTwoD.getRawData().get(j);
                        
@@ -127,6 +132,7 @@ public class ParallelTwoD{
                        
 
                        //assign the data point into the cluster
+                       System.out.println("rank "+pTwoD.rank+"x: "+p.getX()+"y: "+p.getY());
                        pTwoD.clusters.get(idCluster).add(p);
                    }
                    for(int m=0;m<pTwoD.k;m++){
@@ -209,6 +215,7 @@ public class ParallelTwoD{
                 MPIMessage msg = (MPIMessage)MPIMsgArray[0];
                 //conbine the subCluster from every node
                 for(int n=0;n<k;n++){
+                    System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
                     if(getClusters().size() < k){
                         getClusters().add(msg.getClusters().get(n));
                         getClusters().get(n).setCentroid(msg.getClusters().get(n).getCentroid());
@@ -223,6 +230,9 @@ public class ParallelTwoD{
             for(int n=0;n<k;n++){
                 clusters.get(n).calculateCentroid();
                 
+            }
+            if(i == (getMiu()-1)){
+                return;
             }
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];
