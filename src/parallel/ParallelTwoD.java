@@ -127,6 +127,7 @@ public class ParallelTwoD{
                
                long start = System.currentTimeMillis();
                MPIMessage msg = (MPIMessage)messageArray[0];
+               MPIMessage msgSend = new MPIMessage();
                
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
                    int lastRun = msg.getLastRun();
@@ -163,20 +164,20 @@ public class ParallelTwoD{
                    
                    for(int m=0;m<pTwoD.k;m++){
                        pTwoD.clusters.get(m).calculateCentroid();
-                       msg.addCentroid(pTwoD.clusters.get(m).getCentroid());
-                       msg.addPointNumber(pTwoD.clusters.get(m).getCluster().size());
+                       msgSend.addCentroid(pTwoD.clusters.get(m).getCentroid());
+                       msgSend.addPointNumber(pTwoD.clusters.get(m).getCluster().size());
                    }
                    
                    long end = System.currentTimeMillis();
                    long duration = end - start;
-                   msg.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
+                   msgSend.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
                    if(lastRun == 1){
                        System.out.println("last run size "+pTwoD.clusters.get(0).getCluster().size());
-                       msg.setClusters(pTwoD.clusters);
+                       msgSend.setClusters(pTwoD.clusters);
                    }
                    
-                   msg.setRunningTime(duration);
-                   messageArray[0] = msg;
+                   msgSend.setRunningTime(duration);
+                   messageArray[0] = msgSend;
                    messageArray[1] = null;
                    try{
                        MPI.COMM_WORLD.Send(messageArray, 0, 2, MPI.OBJECT, 0, 0);
