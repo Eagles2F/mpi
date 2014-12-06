@@ -47,6 +47,7 @@ public class ParallelTwoD{
             TwoDCluster cluster = new TwoDCluster();
             TwoDPoint centroid = new TwoDPoint(0,0);
             cluster.setCentroid(centroid);
+            cluster.setNumber(0);
             this.clusters.add(cluster);
             
         }
@@ -265,8 +266,10 @@ public class ParallelTwoD{
                 for(int n=0;n<k;n++){
                     double x = clusters.get(n).getCentroid().getX()+msg.getCentroid().get(n).getX()*msg.getPointNumber().get(n);
                     double y = clusters.get(n).getCentroid().getY()+msg.getCentroid().get(n).getY()*msg.getPointNumber().get(n);
+                    int num = clusters.get(n).getNumber() + msg.getPointNumber().get(n);
                     clusters.get(n).getCentroid().setX(x);
                     clusters.get(n).getCentroid().setY(y);
+                    clusters.get(n).setNumber(num);
                     
                 }
                 long time = runningTime.get(j) + msg.getRunningTime();
@@ -276,8 +279,8 @@ public class ParallelTwoD{
             }
             for(int j=0;j<k;j++){
                 TwoDPoint centroid = new TwoDPoint();
-                centroid.setX(clusters.get(j).getCentroid().getX()/rawData.size());
-                centroid.setY(clusters.get(j).getCentroid().getY()/rawData.size());
+                centroid.setX(clusters.get(j).getCentroid().getX()/clusters.get(j).getNumber());
+                centroid.setY(clusters.get(j).getCentroid().getY()/clusters.get(j).getNumber());
                 clusters.get(j).setCentroid(centroid);
             }
                 
@@ -295,11 +298,7 @@ public class ParallelTwoD{
                 }
                 return;
             }
-            for(int j=0;j<k;j++){
-                TwoDPoint centroid = new TwoDPoint(0,0);
-                
-                clusters.get(j).setCentroid(centroid);
-            }
+            
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];
                 MPIMessage msgSend = new MPIMessage();
@@ -310,6 +309,7 @@ public class ParallelTwoD{
                 for(int q =0; q<k;q++){
                     
                     msgSend.addCentroid(clusters.get(q).getCentroid());
+                    System.out.println("send centroid "+q+" "+clusters.get(q).getCentroid());
                     getClusters().get(q).clearCluster();
                 }
                 MPIMsgArray[0] = msgSend;
@@ -324,6 +324,12 @@ public class ParallelTwoD{
                                                      
                     e.printStackTrace();
                 }
+            }
+            for(int j=0;j<k;j++){
+                TwoDPoint centroid = new TwoDPoint(0,0);
+                
+                clusters.get(j).setCentroid(centroid);
+                clusters.get(j).setNumber(0);
             }
             
         }
