@@ -295,6 +295,7 @@ public class ParallelTwoD{
                         
                     
                 }
+                return;
             }
             for(int j=0;j<k;j++){
                 TwoDPoint centroid = new TwoDPoint();
