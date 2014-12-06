@@ -1,24 +1,24 @@
 Cluster 0
- Centroid: AGGCAAGGTGAGGACCTAGA
-     AGGCAAGGTGAGGACCTAGA distance to the Centroid:0
-     ATCCAAGGTGAGGACCTAGA distance to the Centroid:2
-     ATGCAAGGTGAGGAACTAGA distance to the Centroid:2
-     TTGCAAGGTGAGGACCTAGA distance to the Centroid:2
-     ATGCAAGCTGAGGACCTAGA distance to the Centroid:2
-     ATGCAAGGTGAGGACCTAGG distance to the Centroid:2
-     ATGCAAGGTGAGGACCTGGA distance to the Centroid:2
-     ATGCAAGGTGAGGACCGAGA distance to the Centroid:2
+ Centroid: ATGCAAGGTGAGGACCTAGA
+     AGGCAAGGTGAGGACCTAGA distance to the Centroid:1
+     ATCCAAGGTGAGGACCTAGA distance to the Centroid:1
+     ATGCAAGGTGAGGAACTAGA distance to the Centroid:1
+     TTGCAAGGTGAGGACCTAGA distance to the Centroid:1
+     ATGCAAGCTGAGGACCTAGA distance to the Centroid:1
+     ATGCAAGGTGAGGACCTAGG distance to the Centroid:1
+     ATGCAAGGTGAGGACCTGGA distance to the Centroid:1
+     ATGCAAGGTGAGGACCGAGA distance to the Centroid:1
      ACGCAAGGTGAGGACCTAGA distance to the Centroid:1
-     ATGCAAGGTGATGACCTAGA distance to the Centroid:2
+     ATGCAAGGTGATGACCTAGA distance to the Centroid:1
 Cluster 1
- Centroid: GCAACGTAACAGAAGGGGTA
-     GCAAAGTAACAGCAGGGGTA distance to the Centroid:2
-     GCAACATAACAGCAGGGGTA distance to the Centroid:2
-     GCAACGTAACAACAGGGGTA distance to the Centroid:2
-     GCAACGTAACAGAAGGGGTA distance to the Centroid:0
-     GCAACGTAACAGCATGGGTA distance to the Centroid:2
+ Centroid: GCAACGTAACAGCAGGGGTA
+     GCAAAGTAACAGCAGGGGTA distance to the Centroid:1
+     GCAACATAACAGCAGGGGTA distance to the Centroid:1
+     GCAACGTAACAACAGGGGTA distance to the Centroid:1
+     GCAACGTAACAGAAGGGGTA distance to the Centroid:1
+     GCAACGTAACAGCATGGGTA distance to the Centroid:1
      GCAACGTAACAGGAGGGGTA distance to the Centroid:1
-     GCAACGTAACAGCAGGAGTA distance to the Centroid:2
-     GCATCGTAACAGCAGGGGTA distance to the Centroid:2
-     GAAACGTAACAGCAGGGGTA distance to the Centroid:2
-     GCAACGTAACAGCAGCGGTA distance to the Centroid:2
+     GCAACGTAACAGCAGGAGTA distance to the Centroid:1
+     GCATCGTAACAGCAGGGGTA distance to the Centroid:1
+     GAAACGTAACAGCAGGGGTA distance to the Centroid:1
+     GCAACGTAACAGCAGCGGTA distance to the Centroid:1
