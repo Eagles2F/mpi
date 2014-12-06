@@ -309,7 +309,7 @@ public class ParallelTwoD{
                 TwoDPoint centroid = new TwoDPoint();
                 centroid.setX(clusters.get(j).getCentroid().getX()/clusters.get(j).getNumber());
                 centroid.setY(clusters.get(j).getCentroid().getY()/clusters.get(j).getNumber());
-                s
+               
                 clusters.get(j).setCentroid(centroid);
             }
                 
