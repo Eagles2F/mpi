@@ -119,8 +119,9 @@ public class ParallelDNA{
             
         }else{
            while(true){
+               
                Object[] messageArray = new Object[2];
-               int lastRun = msg.getLastRun();
+               
                try{
                    MPI.COMM_WORLD.Recv(messageArray, 0, 2, MPI.OBJECT, 0, 0);
                }catch(MPIException e) {
@@ -132,6 +133,7 @@ public class ParallelDNA{
                }
                long start = System.currentTimeMillis();
                MPIMessage msg = (MPIMessage)messageArray[0];
+               int lastRun = msg.getLastRun();
                MPIMessage msgSend = new MPIMessage();
                //System.out.println("Message received: " + msg.getCmdId());
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
