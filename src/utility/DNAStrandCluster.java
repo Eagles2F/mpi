@@ -50,7 +50,7 @@ public class DNAStrandCluster implements Serializable{
 		s.add("G");
 		s.add("C");
 		s.add("T");
-    	for(int i =0;i< this.centroid.getStrand().length();i++){
+    	for(int i =0;i< 20;i++){
     		int a = 0;
         	int g = 0;
         	int c = 0;
