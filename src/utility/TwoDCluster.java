@@ -10,6 +10,7 @@ public class TwoDCluster implements Serializable{
      */
     private static final long serialVersionUID = 1L;
     private TwoDPoint centroid;
+    private int number;
     
     private ArrayList<TwoDPoint> cluster;
     public TwoDCluster(){
@@ -61,4 +62,13 @@ public class TwoDCluster implements Serializable{
 	public void clearCluster(){
 		this.cluster.clear();
 	}
+
+    public Integer getNumber() {
+        // TODO Auto-generated method stub
+        return number;
+    }
+    public void setNumber(int n) {
+        // TODO Auto-generated method stub
+        number = n;
+    }
 }
