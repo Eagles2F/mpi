@@ -80,6 +80,11 @@ public class SeqKmeansForDNAStrands {
 			//step 3: recalculate the centroids in each cluster
 			for(int n=0;n<k;n++){
 				this.clusters.get(n).calculateCentroid();
+				
+				System.out.println("Centroid"+this.clusters.get(n).getCentroid().getStrand());
+				for(int m=0;m<this.clusters.get(n).getCluster().size();m++){
+					System.out.println("    DNAstrand:"+this.clusters.get(n).getCluster().get(m).getStrand());
+				}
 			}
 		}
 	}

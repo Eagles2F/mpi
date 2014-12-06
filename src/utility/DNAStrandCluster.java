@@ -27,12 +27,20 @@ public class DNAStrandCluster implements Serializable{
     
     //recalculate the new centroid
     public void calculateCentroid(){
-    	int a = 0;
-    	int g = 0;
-    	int c = 0;
-    	int t = 0;
+    	
     	DNAStrand dna = new DNAStrand("");
+    	
+    	ArrayList<String> s = new ArrayList<String>();
+   		s.add("A");
+		s.add("G");
+		s.add("C");
+		s.add("T");
     	for(int i =0;i< this.centroid.getStrand().length();i++){
+    		int a = 0;
+        	int g = 0;
+        	int c = 0;
+        	int t = 0;
+    		
     		//calculate the mode character in each position
     		for(int j=0;j< this.getCluster().size();j++){
     			switch(this.cluster.get(j).getStrand().charAt(i)){
@@ -53,15 +61,11 @@ public class DNAStrandCluster implements Serializable{
     			}
     		}
     		ArrayList<Integer> agct = new ArrayList<Integer>();
-    		ArrayList<String> s = new ArrayList<String>();
+    		
     		agct.add(a);
-    		s.add("A");
     		agct.add(g);
-    		s.add("G");
-    		agct.add(c);
-    		s.add("C");
+    		agct.add(c);    
     		agct.add(t);
-    		s.add("T");
     		int max=a;
     		int maxid=0;
     		for(int j=0;j<4;j++){
@@ -71,6 +75,7 @@ public class DNAStrandCluster implements Serializable{
     			}
     		}
     		dna.setStrand(dna.getStrand()+s.get(maxid));
+    		agct.clear();
     	}
     	this.setCentroid(dna);
     }
