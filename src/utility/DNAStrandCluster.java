@@ -10,12 +10,26 @@ public class DNAStrandCluster implements Serializable{
      */
     private static final long serialVersionUID = 1L;
     private DNAStrand centroid;
+    public ArrayList<Integer> a;
+    public ArrayList<Integer> g;
+    public ArrayList<Integer> c;
+    public ArrayList<Integer> t;
     private int number;
-    
     private ArrayList<DNAStrand> cluster;
     public DNAStrandCluster(){
        cluster = new ArrayList<DNAStrand>();
        setCentroid(null);
+       a = new ArrayList<Integer>();
+       g = new ArrayList<Integer>();
+       c = new ArrayList<Integer>();
+       t = new ArrayList<Integer>();
+       for(int i=0; i<centroid.getStrand().length();i++){
+           a.add(0);
+           g.add(0);
+           c.add(0);
+           t.add(0);
+       }
+       number =0;
     }
  
     public ArrayList<DNAStrand> getCluster() {

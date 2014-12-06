@@ -12,9 +12,6 @@ import utility.DNAStrand;
 import utility.DNAStrandCluster;
 import utility.DNAStrandDataLoader;
 import utility.MPIMessage;
-import utility.DNAStrandCluster;
-import utility.TwoDPoint;
-import utility.TwoDpointsDataLoader;
 
 public class ParallelDNA{
     private ArrayList<DNAStrand> rawData;
@@ -261,13 +258,28 @@ public class ParallelDNA{
                 msg = (MPIMessage)MPIMsgArray[0];
                 //conbine the subCluster from every node
                 for(int n=0;n<k;n++){
-                    double x = clusters.get(n).getCentroid().getX()+msg.getCentroid().get(n).getX()*msg.getPointNumber().get(n);
-                    double y = clusters.get(n).getCentroid().getY()+msg.getCentroid().get(n).getY()*msg.getPointNumber().get(n);
-                    int num = clusters.get(n).getNumber() + msg.getPointNumber().get(n);
-                    clusters.get(n).getCentroid().setX(x);
-                    clusters.get(n).getCentroid().setY(y);
-                    clusters.get(n).setNumber(num);
-                
+                    //accumulate number
+                    this.clusters.get(n).setNumber(this.clusters.get(n).getNumber()+msg.getDNANumber().get(n));
+                    //accumulate counter
+                    for(int m=0;m<msg.getDNACentroid().get(n).getStrand().length();m++){
+                        switch(msg.getDNACentroid().get(n).getStrand().charAt(m)){
+                        case 'A':
+                            this.clusters.get(n).a.set(m, this.clusters.get(n).a.get(m)+msg.getDNANumber().get(n));
+                            break;
+                        case 'G':
+                            this.clusters.get(n).g.set(m, this.clusters.get(n).g.get(m)+msg.getDNANumber().get(n));
+                            break;
+                        case 'C':
+                            this.clusters.get(n).c.set(m, this.clusters.get(n).c.get(m)+msg.getDNANumber().get(n));
+                            break;
+                        case 'T':
+                            this.clusters.get(n).t.set(m, this.clusters.get(n).t.get(m)+msg.getDNANumber().get(n));
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+        
             }
                 long time = runningTime.get(j) + msg.getRunningTime();
                 //System.out.println("new run time proc "+(j+1)+" "+time);
@@ -288,10 +300,40 @@ public class ParallelDNA{
             
             //step 3: recalculate the centroids in each cluster
             for(int n=0;n<k;n++){
-                TwoDPoint centroid = new TwoDPoint();
-                centroid.setX(clusters.get(n).getCentroid().getX()/clusters.get(n).getNumber());
-                centroid.setY(clusters.get(n).getCentroid().getY()/clusters.get(n).getNumber());
-                clusters.get(n).setCentroid(centroid);
+                ArrayList<String> s = new ArrayList<String>();
+                s.add("A");
+                s.add("G");
+                s.add("C");
+                s.add("T");
+                DNAStrand dna = new DNAStrand("");
+                
+                for(int m =0;m< this.clusters.get(n).getCentroid().getStrand().length();m++){
+                    int a = this.clusters.get(n).a.get(m);
+                    int g = this.clusters.get(n).g.get(m);
+                    int c = this.clusters.get(n).c.get(m);
+                    int t = this.clusters.get(n).t.get(m);
+                    
+                    //calculate the mode character in each position
+                    
+                    ArrayList<Integer> agct = new ArrayList<Integer>();
+                    
+                    agct.add(a);
+                    agct.add(g);
+                    agct.add(c);    
+                    agct.add(t);
+                    int max=a;
+                    int maxid=0;
+                    for(int j=0;j<4;j++){
+                        if(agct.get(j)>max){
+                            max = agct.get(j);
+                            maxid =j;
+                        }
+                    }
+                    dna.setStrand(dna.getStrand()+s.get(maxid));
+                    agct.clear();
+                }
+                
+                clusters.get(n).setCentroid(dna);
                 
             }
             
