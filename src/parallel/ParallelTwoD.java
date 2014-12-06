@@ -125,6 +125,7 @@ public class ParallelTwoD{
                MPIMessage msg = (MPIMessage)messageArray[0];
                
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
+                   int lastRun = msg.getLastRun();
                    //only transmit the rawData once
                    if(pTwoD.getRawData() == null){
                        pTwoD.setRawData(msg.getRawData());
@@ -155,13 +156,20 @@ public class ParallelTwoD{
                        //System.out.println("rank "+pTwoD.rank+"x: "+p.getX()+"y: "+p.getY());
                        pTwoD.clusters.get(idCluster).add(p);
                    }
+                   
                    for(int m=0;m<pTwoD.k;m++){
-                       pTwoD.clusters.get(m).setCentroid(msg.getCentroid().get(m));
+                       pTwoD.clusters.get(m).calculateCentroid();
+                       msg.addCentroid(pTwoD.clusters.get(m).getCentroid());
+                       msg.addPointNumber(pTwoD.clusters.get(m).getCluster().size());
                    }
+                   
                    long end = System.currentTimeMillis();
                    long duration = end - start;
                    msg.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
-                   msg.setClusters(pTwoD.clusters);
+                   if(lastRun == 1){
+                       msg.setClusters(pTwoD.clusters);
+                   }
+                   
                    msg.setRunningTime(duration);
                    messageArray[0] = msg;
                    messageArray[1] = null;
@@ -237,6 +245,7 @@ public class ParallelTwoD{
     
     private void repeat(int size, int k){
         for(int i=0;i<getMiu();i++){
+            MPIMessage msg = null;
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];
                 try{
@@ -248,29 +257,39 @@ public class ParallelTwoD{
                                                      
                     e.printStackTrace();
                 }
-                MPIMessage msg = (MPIMessage)MPIMsgArray[0];
-                //conbine the subCluster from every node
+                msg = (MPIMessage)MPIMsgArray[0];
+                //calculate new centroid
                 for(int n=0;n<k;n++){
-                    //System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
-                    if(getClusters().size() < k){
-                        getClusters().add(msg.getClusters().get(n));
-                        getClusters().get(n).setCentroid(msg.getClusters().get(n).getCentroid());
-                    }else{
-                        getClusters().get(n).addCluster(msg.getClusters().get(n));
+                    double x = clusters.get(n).getCentroid().getX()+msg.getCentroid().get(n).getX()*msg.getPointNumber().get(n);
+                    double y = clusters.get(n).getCentroid().getY()+msg.getCentroid().get(n).getY()*msg.getPointNumber().get(n);
+                    clusters.get(n).getCentroid().setX(x);
+                    clusters.get(n).getCentroid().setY(y);
+                    
                 }
-                
-            }
                 long time = runningTime.get(j) + msg.getRunningTime();
                 //System.out.println("new run time proc "+(j+1)+" "+time);
-                runningTime.set(j, time);
-            }
-            
-            //step 3: recalculate the centroids in each cluster
-            for(int n=0;n<k;n++){
-                clusters.get(n).calculateCentroid();
+                runningTime.set(j, time); 
                 
             }
+            for(int j=0;j<k;j++){
+                TwoDPoint centroid = new TwoDPoint();
+                centroid.setX(clusters.get(j).getCentroid().getX()/rawData.size());
+                centroid.setY(clusters.get(j).getCentroid().getY()/rawData.size());
+                clusters.get(j).setCentroid(centroid);
+            }
+                
+            
+            
+            //step 3: recalculate the centroids in each cluster
+            
             if(i == (getMiu()-1)){
+                for(int n=0;n<k;n++){
+                    //System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
+                    
+                        getClusters().add(msg.getClusters().get(n));
+                        
+                    
+                }
                 return;
             }
             for(int j=0;j<size;j++){
