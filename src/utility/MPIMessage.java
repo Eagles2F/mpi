@@ -39,6 +39,7 @@ public class MPIMessage implements Serializable{
         DNACentroid = new ArrayList<DNAStrand>();
         pointNumber = new ArrayList<Integer>();
         DNANumber = new ArrayList<Integer>();
+        lastRun = 0;
     }
     public String getFileName() {
         return fileName;

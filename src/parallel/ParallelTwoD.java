@@ -304,6 +304,9 @@ public class ParallelTwoD{
                 Object[] MPIMsgArray = new Object[2];
                 MPIMessage msgSend = new MPIMessage();
                 msgSend.setCmdId(MPIMessage.CommandId.CLUSTER);
+                if(i == (getMiu()-2)){
+                    msgSend.setLastRun(1);
+                }
                 for(int q =0; q<k;q++){
                     
                     msgSend.addCentroid(clusters.get(q).getCentroid());
