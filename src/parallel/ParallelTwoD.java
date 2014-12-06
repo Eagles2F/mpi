@@ -42,7 +42,7 @@ public class ParallelTwoD{
         this.runningTime = new ArrayList<Long>();
         this.rawData = null;
         this.k = k;
-        this.miu = 10;
+        System.out.println("cluster num "+k);
         for(int i =0; i<k;i++){
             TwoDCluster cluster = new TwoDCluster();
             TwoDPoint centroid = new TwoDPoint(0,0);
@@ -309,7 +309,7 @@ public class ParallelTwoD{
                 for(int q =0; q<k;q++){
                     
                     msgSend.addCentroid(clusters.get(q).getCentroid());
-                    System.out.println("send centroid "+q+" "+clusters.get(q).getCentroid());
+                    //System.out.println("send centroid "+q+" "+clusters.get(q).getCentroid());
                     getClusters().get(q).clearCluster();
                 }
                 MPIMsgArray[0] = msgSend;
