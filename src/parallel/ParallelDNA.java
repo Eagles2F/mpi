@@ -145,6 +145,7 @@ public class ParallelDNA{
                  //clear the cluster every time
                 for(int i=0;i<pDNA.k;i++){
                      pDNA.clusters.get(i).clearCluster();
+                     pDNA.clusters.get(i).setCentroid(msg.getDNACentroid().get(i));
                 }
                    for(int j=0;j<pDNA.getRawData().size();j++){
                        DNAStrand p = pDNA.getRawData().get(j);
