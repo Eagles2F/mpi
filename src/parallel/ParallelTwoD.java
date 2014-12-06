@@ -171,6 +171,7 @@ public class ParallelTwoD{
                    long duration = end - start;
                    msg.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
                    if(lastRun == 1){
+                       System.out.println("last run size "+pTwoD.clusters.get(0).getCluster().size());
                        msg.setClusters(pTwoD.clusters);
                    }
                    
