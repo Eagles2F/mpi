@@ -113,9 +113,12 @@ public class ParallelDNA{
             long duration = end - start;
             System.out.println("system runtime: "+duration);
             System.out.println("every process runtime:");
+            long total = 0;
             for(int i=0;i<pDNA.getRunningTime().size();i++){
             System.out.println("proc "+(i+1)+": "+pDNA.getRunningTime()    .get(i));
+            total += pDNA.getRunningTime().get(i);
             }
+            System.out.println("total process runtime: "+total);
             pDNA.outputResults(output);
             
         }else{

@@ -109,9 +109,12 @@ public class ParallelTwoD{
             long duration = end - start;
             System.out.println("system run time: "+duration);
             System.out.println("every process runtime:");
+            long total = 0;
             for(int i=0;i<pTwoD.getRunningTime().size();i++){
                 System.out.println("proc "+(i+1)+": "+pTwoD.getRunningTime().get(i));
+                total += pTwoD.getRunningTime().get(i);
             }
+            System.out.println("total process runtime: "+total);
             pTwoD.outputResults(output);
             
         }else{
