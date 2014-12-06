@@ -38,12 +38,15 @@ public class ParallelTwoD{
     public ParallelTwoD(int k,int size){
         this.rawData = new ArrayList<TwoDPoint>();
         this.clusters = new ArrayList<TwoDCluster>();
+        
         this.runningTime = new ArrayList<Long>();
         this.rawData = null;
         this.k = k;
         this.miu = 10;
         for(int i =0; i<k;i++){
             TwoDCluster cluster = new TwoDCluster();
+            TwoDPoint centroid = new TwoDPoint(0,0);
+            cluster.setCentroid(centroid);
             this.clusters.add(cluster);
             
         }
@@ -291,6 +294,11 @@ public class ParallelTwoD{
                     
                 }
                 return;
+            }
+            for(int j=0;j<k;j++){
+                TwoDPoint centroid = new TwoDPoint(0,0);
+                
+                clusters.get(j).setCentroid(centroid);
             }
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];
