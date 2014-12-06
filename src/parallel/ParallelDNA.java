@@ -169,7 +169,7 @@ public class ParallelDNA{
                    for(int m=0;m<pDNA.k;m++){
                        pDNA.clusters.get(m).calculateCentroid();
                        msgSend.addDNACentroid(pDNA.clusters.get(m).getCentroid());
-                       msgSend.addPointNumber(pDNA.clusters.get(m).getCluster().size());
+                       msgSend.addDNANumber(pDNA.clusters.get(m).getCluster().size());
                    }
                    long end = System.currentTimeMillis();
                    long duration = end - start;
