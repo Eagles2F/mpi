@@ -219,9 +219,12 @@ public class ParallelTwoD{
                 
             }
             ArrayList<TwoDPoint> rawDataSend = new ArrayList<TwoDPoint>();
+            System.out.println("rawData len "+rawData2.size());
             int chunk = rawData2.size()/size;
+            System.out.println("proc "+j);
             for(int m=j*chunk;m<(j+1)*chunk;m++){
                 rawDataSend.add(rawData2.get(m));
+                System.out.println(rawData2.get(m).getX()+""+rawData2.get(m).getY());
             }
             //for the last chunk, need append the remainder of the rawData
             if(j == (size-1)){
