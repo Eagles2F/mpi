@@ -35,7 +35,7 @@ public class TwoDpointsDataLoader {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+		p
 		return points;
 	}
 }
