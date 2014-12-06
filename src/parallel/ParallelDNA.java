@@ -309,8 +309,8 @@ public class ParallelDNA{
                 s.add("C");
                 s.add("T");
                 DNAStrand dna = new DNAStrand("");
-                
-                for(int m =0;m< this.clusters.get(n).getCentroid().getStrand().length();m++){
+                //20 is the default length of DNA strand.
+                for(int m =0;m< 20;m++){
                     int a = this.clusters.get(n).a.get(m);
                     int g = this.clusters.get(n).g.get(m);
                     int c = this.clusters.get(n).c.get(m);
