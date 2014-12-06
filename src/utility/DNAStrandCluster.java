@@ -10,6 +10,7 @@ public class DNAStrandCluster implements Serializable{
      */
     private static final long serialVersionUID = 1L;
     private DNAStrand centroid;
+    private int number;
     
     private ArrayList<DNAStrand> cluster;
     public DNAStrandCluster(){
@@ -68,4 +69,12 @@ public class DNAStrandCluster implements Serializable{
 	public void clearCluster(){
 		this.cluster.clear();
 	}
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
 }

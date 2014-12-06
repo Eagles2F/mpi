@@ -53,9 +53,12 @@ public class ParallelDNA{
         this.runningTime = new ArrayList<Long>();
         this.rawData = null;
         this.k = k;
-        this.miu = 10;
+        
         for(int i =0; i<k;i++){
             DNAStrandCluster cluster = new DNAStrandCluster();
+            DNAStrand centroid = new DNAStrand(null);
+            cluster.setCentroid(centroid);
+            cluster.setNumber(0);
             this.clusters.add(cluster);
         }
         for(int i=0;i<size;i++){
@@ -120,6 +123,7 @@ public class ParallelDNA{
         }else{
            while(true){
                Object[] messageArray = new Object[2];
+               int lastRun = msg.getLastRun();
                try{
                    MPI.COMM_WORLD.Recv(messageArray, 0, 2, MPI.OBJECT, 0, 0);
                }catch(MPIException e) {
@@ -131,6 +135,7 @@ public class ParallelDNA{
                }
                long start = System.currentTimeMillis();
                MPIMessage msg = (MPIMessage)messageArray[0];
+               MPIMessage msgSend = new MPIMessage();
                //System.out.println("Message received: " + msg.getCmdId());
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
                    //only transmit the rawData once
@@ -162,14 +167,18 @@ public class ParallelDNA{
                        pDNA.clusters.get(idCluster).add(p);
                    }
                    for(int m=0;m<pDNA.k;m++){
-                       pDNA.clusters.get(m).setCentroid(msg.getDNACentroid().get(m));
+                       pDNA.clusters.get(m).calculateCentroid();
+                       msgSend.addDNACentroid(pDNA.clusters.get(m).getCentroid());
+                       msgSend.addPointNumber(pDNA.clusters.get(m).getCluster().size());
                    }
                    long end = System.currentTimeMillis();
                    long duration = end - start;
-                   msg.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
-                   msg.setDNAClusters(pDNA.clusters);
-                   msg.setRunningTime(duration);
-                   messageArray[0] = msg;
+                   msgSend.setRspId(MPIMessage.ResponseId.CLUSTERRSP);
+                   if(lastRun == 1){
+                       msgSend.setDNAClusters(pDNA.clusters);
+                   }
+                   msgSend.setRunningTime(duration);
+                   messageArray[0] = msgSend;
                    messageArray[1] = null;
                    try{
                        MPI.COMM_WORLD.Send(messageArray, 0, 2, MPI.OBJECT, 0, 0);
@@ -237,6 +246,7 @@ public class ParallelDNA{
     
     private void repeat(int size, int k){
         for(int i=0;i<getMiu();i++){
+            MPIMessage msg = null;
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];
                 try{
@@ -248,41 +258,57 @@ public class ParallelDNA{
                                                      
                     e.printStackTrace();
                 }
-                MPIMessage msg = (MPIMessage)MPIMsgArray[0];
+                msg = (MPIMessage)MPIMsgArray[0];
                 //conbine the subCluster from every node
                 for(int n=0;n<k;n++){
-                    if(getClusters().size() < k){
-                        getClusters().add(msg.getDNAClusters().get(n));
-                        getClusters().get(n).setCentroid(msg.getDNAClusters().get(n).getCentroid());
-                    }else{
-                        getClusters().get(n).addCluster(msg.getDNAClusters().get(n));
-                }
+                    double x = clusters.get(n).getCentroid().getX()+msg.getCentroid().get(n).getX()*msg.getPointNumber().get(n);
+                    double y = clusters.get(n).getCentroid().getY()+msg.getCentroid().get(n).getY()*msg.getPointNumber().get(n);
+                    int num = clusters.get(n).getNumber() + msg.getPointNumber().get(n);
+                    clusters.get(n).getCentroid().setX(x);
+                    clusters.get(n).getCentroid().setY(y);
+                    clusters.get(n).setNumber(num);
                 
             }
                 long time = runningTime.get(j) + msg.getRunningTime();
                 //System.out.println("new run time proc "+(j+1)+" "+time);
                 runningTime.set(j, time);
+                if(i == (getMiu()-1)){
+                    for(int n=0;n<k;n++){
+                    getClusters().get(n).addCluster(msg.getDNAClusters().get(n));
+                    }
+                } 
+           }
+                if(i == (getMiu()-1)){
+                    for(int n=0;n<k;n++){
+                     getClusters().get(n).calculateCentroid();
+                }
+                    //this is the last run, we need to caculate the centroid and exit the loop
+                    return;
             }
             
             //step 3: recalculate the centroids in each cluster
             for(int n=0;n<k;n++){
-                clusters.get(n).calculateCentroid();
+                TwoDPoint centroid = new TwoDPoint();
+                centroid.setX(clusters.get(n).getCentroid().getX()/clusters.get(n).getNumber());
+                centroid.setY(clusters.get(n).getCentroid().getY()/clusters.get(n).getNumber());
+                clusters.get(n).setCentroid(centroid);
                 
             }
             
-            if(i == (getMiu()-1)){
-                return;
-            }
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];
-                MPIMessage msg = new MPIMessage();
-                msg.setCmdId(MPIMessage.CommandId.CLUSTER);
+                MPIMessage msgSend = new MPIMessage();
+                msgSend.setCmdId(MPIMessage.CommandId.CLUSTER);
+                //set last run, then worker could send the cluster back
+                if(i == (getMiu()-2)){
+                    msgSend.setLastRun(1);
+                }
                 for(int q =0; q<k;q++){
                     
-                    msg.addDNACentroid(clusters.get(q).getCentroid());
+                    msgSend.addDNACentroid(clusters.get(q).getCentroid());
                     getClusters().get(q).clearCluster();
                 }
-                MPIMsgArray[0] = msg;
+                MPIMsgArray[0] = msgSend;
                 MPIMsgArray[1] = null;
                 //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
                 try{
@@ -295,6 +321,11 @@ public class ParallelDNA{
                     e.printStackTrace();
                 }
             }
+          //clear the centroid
+            for(int j=0;j<k;j++){
+                DNAStrand centroid = new DNAStrand(null);
+                clusters.get(j).setCentroid(centroid);
+             }
             
         }
     }
