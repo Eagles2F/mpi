@@ -79,14 +79,15 @@ public class ParallelDNA{
         this.clusters = clusters;
     }
     public static void main(String[] args){
-        int size;
-    try {
+       int size;
+       if(args.length != 2){
+            System.out.println("Usage:java parallel.ParallelTwoD  <number of clusters> <number of iterations>");
+        }
+       try {
         System.out.println("start Init");
          
         MPI.Init(args);
-        System.out.println("get rank");
         
-        System.out.println("get size");
         size = MPI.COMM_WORLD.Size() - 1;
         ParallelDNA pDNA = new ParallelDNA(Integer.valueOf(args[0]),size);
         pDNA.setMiu(Integer.valueOf(args[1]));
@@ -110,11 +111,14 @@ public class ParallelDNA{
             pDNA.repeat(size, pDNA.k);
             long end = System.currentTimeMillis();
             long duration = end - start;
-            System.out.println("duration: "+duration);
-            System.out.println("runtime:");
+            System.out.println("system runtime: "+duration);
+            System.out.println("every process runtime:");
+            long total = 0;
             for(int i=0;i<pDNA.getRunningTime().size();i++){
             System.out.println("proc "+(i+1)+": "+pDNA.getRunningTime()    .get(i));
+            total += pDNA.getRunningTime().get(i);
             }
+            System.out.println("total process runtime: "+total);
             pDNA.outputResults(output);
             
         }else{
@@ -135,7 +139,7 @@ public class ParallelDNA{
                MPIMessage msg = (MPIMessage)messageArray[0];
                int lastRun = msg.getLastRun();
                MPIMessage msgSend = new MPIMessage();
-               //System.out.println("Message received: " + msg.getCmdId());
+               
                if(msg.getCmdId() == MPIMessage.CommandId.CLUSTER){
                    //only transmit the rawData once
                    if(pDNA.getRawData() == null){
@@ -169,7 +173,7 @@ public class ParallelDNA{
                    for(int m=0;m<pDNA.k;m++){
                        pDNA.clusters.get(m).calculateCentroid();
                        msgSend.addDNACentroid(pDNA.clusters.get(m).getCentroid());
-                       msgSend.addPointNumber(pDNA.clusters.get(m).getCluster().size());
+                       msgSend.addDNANumber(pDNA.clusters.get(m).getCluster().size());
                    }
                    long end = System.currentTimeMillis();
                    long duration = end - start;
@@ -230,7 +234,7 @@ public class ParallelDNA{
             Object[] MPIMsgArray = new Object[2];
             MPIMsgArray[0] = msg;
             MPIMsgArray[1] = null;
-            //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+            
             try{
                 MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
             }catch(MPIException e) {
@@ -285,7 +289,7 @@ public class ParallelDNA{
         
             }
                 long time = runningTime.get(j) + msg.getRunningTime();
-                //System.out.println("new run time proc "+(j+1)+" "+time);
+                
                 runningTime.set(j, time);
                 if(i == (getMiu()-1)){
                     for(int n=0;n<k;n++){
@@ -309,8 +313,8 @@ public class ParallelDNA{
                 s.add("C");
                 s.add("T");
                 DNAStrand dna = new DNAStrand("");
-                
-                for(int m =0;m< this.clusters.get(n).getCentroid().getStrand().length();m++){
+                //20 is the default length of DNA strand.
+                for(int m =0;m< 20;m++){
                     int a = this.clusters.get(n).a.get(m);
                     int g = this.clusters.get(n).g.get(m);
                     int c = this.clusters.get(n).c.get(m);
@@ -355,7 +359,7 @@ public class ParallelDNA{
                 }
                 MPIMsgArray[0] = msgSend;
                 MPIMsgArray[1] = null;
-                //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+                
                 try{
                     MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
                 }catch(MPIException e) {
