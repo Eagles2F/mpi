@@ -1,5 +1,6 @@
 package parallel;
 import mpi.*;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -73,14 +74,15 @@ public class ParallelTwoD{
     }
     public static void main(String[] args){
         int size;
+        if(args.length != 2){
+            System.out.println("Usage:java parallel.ParallelDNA  <number of clusters> <number of iterations>");
+        }
         
     try {
         System.out.println("start Init");
         
         MPI.Init(args);
-        System.out.println("get rank");
         
-        System.out.println("get size");
         size = MPI.COMM_WORLD.Size() - 1;
         ParallelTwoD pTwoD = new ParallelTwoD(Integer.valueOf(args[0]),size);
         pTwoD.setMiu(Integer.valueOf(args[1]));
@@ -105,8 +107,8 @@ public class ParallelTwoD{
             pTwoD.repeat(size, pTwoD.k);
             long end = System.currentTimeMillis();
             long duration = end - start;
-            System.out.println("duration: "+duration);
-            System.out.println("runtime:");
+            System.out.println("system run time: "+duration);
+            System.out.println("every process runtime:");
             for(int i=0;i<pTwoD.getRunningTime().size();i++){
                 System.out.println("proc "+(i+1)+": "+pTwoD.getRunningTime().get(i));
             }
@@ -220,12 +222,12 @@ public class ParallelTwoD{
                 
             }
             ArrayList<TwoDPoint> rawDataSend = new ArrayList<TwoDPoint>();
-            //System.out.println("rawData len "+rawData2.size());
+            
             int chunk = rawData2.size()/size;
             //System.out.println("proc "+j);
             for(int m=j*chunk;m<(j+1)*chunk;m++){
                 rawDataSend.add(rawData2.get(m));
-                //System.out.println(rawData2.get(m).getX()+""+rawData2.get(m).getY());
+                
             }
             //for the last chunk, need append the remainder of the rawData
             if(j == (size-1)){
@@ -238,7 +240,7 @@ public class ParallelTwoD{
             Object[] MPIMsgArray = new Object[2];
             MPIMsgArray[0] = msg;
             MPIMsgArray[1] = null;
-            //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+            
             try{
                 MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
             }catch(MPIException e) {
@@ -273,19 +275,18 @@ public class ParallelTwoD{
                     double x = clusters.get(n).getCentroid().getX()+msg.getCentroid().get(n).getX()*msg.getPointNumber().get(n);
                     double y = clusters.get(n).getCentroid().getY()+msg.getCentroid().get(n).getY()*msg.getPointNumber().get(n);
                     int num = clusters.get(n).getNumber() + msg.getPointNumber().get(n);
-                    //System.out.println("cluster "+n+"accumulate x: "+x+" msg.x "+msg.getCentroid().get(n).getX()+"num "+msg.getPointNumber().get(n));
-                    //System.out.println("cluster "+n+"accumulate y: "+x+" msg.y "+msg.getCentroid().get(n).getY()+"num "+msg.getPointNumber().get(n));
+                    
                     clusters.get(n).getCentroid().setX(x);
                     clusters.get(n).getCentroid().setY(y);
                     clusters.get(n).setNumber(num);
                     
                 }
                 long time = runningTime.get(j) + msg.getRunningTime();
-                //System.out.println("new run time proc "+(j+1)+" "+time);
+                
                 runningTime.set(j, time); 
                 if(i == (getMiu()-1)){
                     for(int n=0;n<k;n++){
-                        //System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
+                        
                         
                             getClusters().get(n).addCluster(msg.getClusters().get(n));
                             
@@ -296,7 +297,7 @@ public class ParallelTwoD{
             }
             if(i == (getMiu()-1)){
                 for(int n=0;n<k;n++){
-                    //System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
+                    
                     
                         getClusters().get(n).calculateCentroid();
                         
@@ -308,7 +309,7 @@ public class ParallelTwoD{
                 TwoDPoint centroid = new TwoDPoint();
                 centroid.setX(clusters.get(j).getCentroid().getX()/clusters.get(j).getNumber());
                 centroid.setY(clusters.get(j).getCentroid().getY()/clusters.get(j).getNumber());
-                //System.out.println("cluster "+k+"new x: "+centroid.getX()+"y "+centroid.getY());
+                s
                 clusters.get(j).setCentroid(centroid);
             }
                 
@@ -328,12 +329,12 @@ public class ParallelTwoD{
                 for(int q =0; q<k;q++){
                     
                     msgSend.addCentroid(clusters.get(q).getCentroid());
-                    //System.out.println("send centroid "+q+" "+clusters.get(q).getCentroid());
+                   
                     getClusters().get(q).clearCluster();
                 }
                 MPIMsgArray[0] = msgSend;
                 MPIMsgArray[1] = null;
-                //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
+                
                 try{
                     MPI.COMM_WORLD.Send(MPIMsgArray, 0, 2, MPI.OBJECT, j+1, 0);
                 }catch(MPIException e) {
