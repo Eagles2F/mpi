@@ -27,15 +27,14 @@ public class TwoDpointsDataLoader {
 			while((line = br.readLine())!= null){
 				String [] b = line.split(splitBy);
 				points.add(new TwoDPoint(Double.valueOf(b[0]),Double.valueOf(b[1])));
-				//bypass the empty line
-				//br.readLine();
+
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		p
+
 		return points;
 	}
 }
