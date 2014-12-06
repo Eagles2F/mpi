@@ -23,7 +23,7 @@ public class DNAStrandCluster implements Serializable{
        g = new ArrayList<Integer>();
        c = new ArrayList<Integer>();
        t = new ArrayList<Integer>();
-       for(int i=0; i<centroid.getStrand().length();i++){
+       for(int i=0; i<20;i++){
            a.add(0);
            g.add(0);
            c.add(0);
