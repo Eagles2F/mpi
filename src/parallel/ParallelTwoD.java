@@ -275,7 +275,25 @@ public class ParallelTwoD{
                 long time = runningTime.get(j) + msg.getRunningTime();
                 //System.out.println("new run time proc "+(j+1)+" "+time);
                 runningTime.set(j, time); 
-                
+                if(i == (getMiu()-1)){
+                    for(int n=0;n<k;n++){
+                        //System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
+                        
+                            getClusters().get(n).addCluster(msg.getClusters().get(n));
+                            
+                        
+                    }
+                    
+                } 
+            }
+            if(i == (getMiu()-1)){
+                for(int n=0;n<k;n++){
+                    //System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
+                    
+                        getClusters().get(n).calculateCentroid();
+                        
+                    
+                }
             }
             for(int j=0;j<k;j++){
                 TwoDPoint centroid = new TwoDPoint();
@@ -288,16 +306,7 @@ public class ParallelTwoD{
             
             //step 3: recalculate the centroids in each cluster
             
-            if(i == (getMiu()-1)){
-                for(int n=0;n<k;n++){
-                    //System.out.println("receive sub cluster "+n+"size: "+msg.getClusters().get(n).getCluster().size());
-                    
-                        getClusters().add(msg.getClusters().get(n));
-                        
-                    
-                }
-                return;
-            }
+            
             
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];
