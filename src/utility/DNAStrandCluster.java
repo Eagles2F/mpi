@@ -27,29 +27,52 @@ public class DNAStrandCluster implements Serializable{
     
     //recalculate the new centroid
     public void calculateCentroid(){
-    	ArrayList<Integer> distance = new ArrayList<Integer>();
-    	int temp=0;
-    	for(DNAStrand dna:this.cluster){
-    		temp =0;
-    		for(DNAStrand dna1:this.cluster){
-    			temp += dna1.distance(dna);
+    	int a = 0;
+    	int g = 0;
+    	int c = 0;
+    	int t = 0;
+    	DNAStrand dna = new DNAStrand("");
+    	for(int i =0;i< this.centroid.getStrand().length();i++){
+    		//calculate the mode character in each position
+    		for(int j=0;j< this.getCluster().size();j++){
+    			switch(this.cluster.get(j).getStrand().charAt(i)){
+    			case 'A':
+    				a++;
+    				break;
+    			case 'G':
+    				g++;
+    				break;
+    			case 'C':
+    				c++;
+    				break;
+    			case 'T':
+    				t++;
+    				break;
+    			default:
+    				break;
+    			}
     		}
-    		distance.add(temp);
-    	}
-    	
-    	//the point which is closest to the other node becomes the new centroid
-    	int mindistance = 99999;
-    	int id = 0;
-    	for(int i=0;i<distance.size();i++){
-    		if(distance.get(i)<mindistance){
-    			id = i;
-    			mindistance = distance.get(i);
+    		ArrayList<Integer> agct = new ArrayList<Integer>();
+    		ArrayList<String> s = new ArrayList<String>();
+    		agct.add(a);
+    		s.add("A");
+    		agct.add(g);
+    		s.add("G");
+    		agct.add(c);
+    		s.add("C");
+    		agct.add(t);
+    		s.add("T");
+    		int max=a;
+    		int maxid=0;
+    		for(int j=0;j<4;j++){
+    			if(agct.get(j)>max){
+    				max = agct.get(j);
+    				maxid =j;
+    			}
     		}
+    		dna.setStrand(dna.getStrand()+s.get(maxid));
     	}
-    	if(centroid == null){
-    	    centroid = new DNAStrand(null);
-         }
-    	this.centroid = this.cluster.get(id);
+    	this.setCentroid(dna);
     }
     
 	public DNAStrand getCentroid() {
