@@ -25,6 +25,7 @@ public class MPIMessage implements Serializable{
     private CommandId cmdId;
     private ResponseId rspId;
     private long runningTime;
+    private int lastRun;
     private ArrayList<TwoDCluster> clusters;
     private ArrayList<TwoDPoint> rawData;
     private ArrayList<TwoDPoint> centroid;
@@ -134,6 +135,12 @@ public class MPIMessage implements Serializable{
     }
     public void setRunningTime(long runningTime) {
         this.runningTime = runningTime;
+    }
+    public int getLastRun() {
+        return lastRun;
+    }
+    public void setLastRun(int lastRun) {
+        this.lastRun = lastRun;
     }
     
 }

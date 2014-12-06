@@ -294,14 +294,14 @@ public class ParallelTwoD{
             }
             for(int j=0;j<size;j++){
                 Object[] MPIMsgArray = new Object[2];
-                MPIMessage msg = new MPIMessage();
-                msg.setCmdId(MPIMessage.CommandId.CLUSTER);
+                MPIMessage msgSend = new MPIMessage();
+                msgSend.setCmdId(MPIMessage.CommandId.CLUSTER);
                 for(int q =0; q<k;q++){
                     
-                    msg.addCentroid(clusters.get(q).getCentroid());
+                    msgSend.addCentroid(clusters.get(q).getCentroid());
                     getClusters().get(q).clearCluster();
                 }
-                MPIMsgArray[0] = msg;
+                MPIMsgArray[0] = msgSend;
                 MPIMsgArray[1] = null;
                 //System.out.println(j+" node 0 send to node " + j+1 + ", message " + msg.getCmdId());
                 try{
