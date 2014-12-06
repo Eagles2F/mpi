@@ -265,9 +265,12 @@ public class ParallelTwoD{
                 msg = (MPIMessage)MPIMsgArray[0];
                 //calculate new centroid
                 for(int n=0;n<k;n++){
+                    
                     double x = clusters.get(n).getCentroid().getX()+msg.getCentroid().get(n).getX()*msg.getPointNumber().get(n);
                     double y = clusters.get(n).getCentroid().getY()+msg.getCentroid().get(n).getY()*msg.getPointNumber().get(n);
                     int num = clusters.get(n).getNumber() + msg.getPointNumber().get(n);
+                    System.out.println("cluster "+n+"accumulate x: "+x+" msg.x "+msg.getCentroid().get(n).getX()+"num "+msg.getPointNumber().get(n));
+                    System.out.println("cluster "+n+"accumulate y: "+x+" msg.y "+msg.getCentroid().get(n).getY()+"num "+msg.getPointNumber().get(n));
                     clusters.get(n).getCentroid().setX(x);
                     clusters.get(n).getCentroid().setY(y);
                     clusters.get(n).setNumber(num);
@@ -301,6 +304,7 @@ public class ParallelTwoD{
                 TwoDPoint centroid = new TwoDPoint();
                 centroid.setX(clusters.get(j).getCentroid().getX()/clusters.get(j).getNumber());
                 centroid.setY(clusters.get(j).getCentroid().getY()/clusters.get(j).getNumber());
+                System.out.println("cluster "+k+"new x: "+centroid.getX()+"y "+centroid.getY());
                 clusters.get(j).setCentroid(centroid);
             }
                 
