@@ -286,7 +286,7 @@ public class ParallelDNA{
         
             }
                 long time = runningTime.get(j) + msg.getRunningTime();
-                s
+                
                 runningTime.set(j, time);
                 if(i == (getMiu()-1)){
                     for(int n=0;n<k;n++){
