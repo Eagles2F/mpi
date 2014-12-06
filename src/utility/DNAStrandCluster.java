@@ -18,7 +18,7 @@ public class DNAStrandCluster implements Serializable{
     private ArrayList<DNAStrand> cluster;
     public DNAStrandCluster(){
        cluster = new ArrayList<DNAStrand>();
-       setCentroid(null);
+       setCentroid(new DNAStrand(""));
        a = new ArrayList<Integer>();
        g = new ArrayList<Integer>();
        c = new ArrayList<Integer>();
